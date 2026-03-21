@@ -1,32 +1,27 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Visor FEDEPA</title>
 
-  <!-- Leaflet -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
-  <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Inconsolata:wght@300;400&display=swap" rel="stylesheet"/>
 
   <style>
     :root {
-      --bg:        #0b1120;
-      --panel:     #111827;
-      --border:    #1e3a5f;
-      --accent:    #00c6a7;
-      --accent2:   #0077ff;
-      --text:      #cde4f4;
-      --muted:     #4a7fa5;
-      --danger:    #ff4d6d;
-      --radius:    8px;
+      --bg:      #0b1120;
+      --panel:   #111827;
+      --border:  #1e3a5f;
+      --accent:  #00c6a7;
+      --accent2: #0077ff;
+      --text:    #cde4f4;
+      --muted:   #4a7fa5;
+      --danger:  #ff4d6d;
+      --radius:  8px;
     }
-
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     body {
       background: var(--bg);
       color: var(--text);
@@ -37,7 +32,7 @@
       overflow: hidden;
     }
 
-    /* ── HEADER ── */
+    /* HEADER */
     header {
       display: flex;
       align-items: center;
@@ -48,7 +43,6 @@
       z-index: 1000;
       flex-shrink: 0;
     }
-
     .logo-dot {
       width: 36px; height: 36px;
       border-radius: 50%;
@@ -58,9 +52,7 @@
       animation: spin 12s linear infinite;
       flex-shrink: 0;
     }
-
     @keyframes spin { to { transform: rotate(360deg); } }
-
     header h1 {
       font-family: 'Rajdhani', sans-serif;
       font-size: 1.4rem;
@@ -69,52 +61,29 @@
       color: var(--accent);
       text-transform: uppercase;
     }
-
     header h1 span { color: var(--text); }
-
-    .header-right {
-      margin-left: auto;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
+    .header-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
     #status-dot {
       width: 9px; height: 9px;
       border-radius: 50%;
       background: var(--muted);
       transition: background .4s;
-      flex-shrink: 0;
     }
-    #status-dot.ok   { background: var(--accent); box-shadow: 0 0 6px var(--accent); }
-    #status-dot.err  { background: var(--danger);  box-shadow: 0 0 6px var(--danger); }
+    #status-dot.ok  { background: var(--accent); box-shadow: 0 0 6px var(--accent); }
+    #status-dot.err { background: var(--danger);  box-shadow: 0 0 6px var(--danger); }
+    #status-label { font-size: 0.75rem; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; }
 
-    #status-label {
-      font-size: 0.75rem;
-      color: var(--muted);
-      letter-spacing: 1px;
-      text-transform: uppercase;
-    }
+    /* LAYOUT */
+    .main { display: flex; flex: 1; overflow: hidden; }
 
-    /* ── MAIN LAYOUT ── */
-    .main {
-      display: flex;
-      flex: 1;
-      overflow: hidden;
-    }
-
-    /* ── SIDEBAR ── */
+    /* SIDEBAR */
     aside {
-      width: 260px;
-      min-width: 260px;
+      width: 260px; min-width: 260px;
       background: var(--panel);
       border-right: 1px solid var(--border);
-      display: flex;
-      flex-direction: column;
-      overflow-y: auto;
-      z-index: 500;
+      display: flex; flex-direction: column;
+      overflow-y: auto; z-index: 500;
     }
-
     .section-title {
       font-family: 'Rajdhani', sans-serif;
       font-size: 0.7rem;
@@ -126,13 +95,7 @@
     }
 
     /* Basemaps */
-    .basemap-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-      padding: 10px 12px;
-    }
-
+    .basemap-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 10px 12px; }
     .basemap-btn {
       background: var(--bg);
       border: 1px solid var(--border);
@@ -146,21 +109,13 @@
       transition: all .2s;
       letter-spacing: 0.5px;
     }
-    .basemap-btn:hover    { border-color: var(--accent); color: var(--accent); }
-    .basemap-btn.active   { background: var(--accent); color: #000; border-color: var(--accent); font-weight: 600; }
+    .basemap-btn:hover  { border-color: var(--accent); color: var(--accent); }
+    .basemap-btn.active { background: var(--accent); color: #000; border-color: var(--accent); font-weight: 600; }
 
-    /* WMS Layers */
-    #layers-list {
-      padding: 8px 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
+    /* Layers */
+    #layers-list { padding: 8px 12px; display: flex; flex-direction: column; gap: 6px; }
     .layer-item {
-      display: flex;
-      align-items: center;
-      gap: 8px;
+      display: flex; align-items: center; gap: 8px;
       background: var(--bg);
       border: 1px solid var(--border);
       border-radius: var(--radius);
@@ -168,9 +123,14 @@
       cursor: pointer;
       transition: border-color .2s;
     }
-    .layer-item:hover { border-color: var(--accent); }
+    .layer-item:hover  { border-color: var(--accent); }
     .layer-item.active { border-color: var(--accent); }
-
+    .layer-swatch {
+      width: 14px; height: 14px;
+      border-radius: 3px;
+      flex-shrink: 0;
+      border: 1.5px solid rgba(255,255,255,0.2);
+    }
     .layer-check {
       width: 16px; height: 16px;
       border: 1.5px solid var(--muted);
@@ -179,92 +139,38 @@
       flex-shrink: 0;
       transition: all .2s;
     }
-    .layer-item.active .layer-check {
-      background: var(--accent);
-      border-color: var(--accent);
-    }
-    .layer-item.active .layer-check::after {
-      content: '✓';
-      font-size: 10px;
-      color: #000;
-      font-weight: bold;
-    }
+    .layer-item.active .layer-check { background: var(--accent); border-color: var(--accent); }
+    .layer-item.active .layer-check::after { content: '✓'; font-size: 10px; color: #000; font-weight: bold; }
+    .layer-name { font-size: 0.78rem; line-height: 1.3; color: var(--text); word-break: break-word; }
 
-    .layer-name {
-      font-size: 0.78rem;
-      line-height: 1.3;
-      color: var(--text);
-      word-break: break-word;
-    }
+    /* Opacity */
+    .opacity-wrap { padding: 0 12px 12px; display: flex; flex-direction: column; gap: 4px; }
+    .opacity-wrap label { font-size: 0.68rem; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; }
+    input[type=range] { width: 100%; accent-color: var(--accent); cursor: pointer; }
 
-    .opacity-wrap {
-      padding: 0 12px 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-    .opacity-wrap label {
-      font-size: 0.68rem;
-      color: var(--muted);
-      letter-spacing: 1px;
-      text-transform: uppercase;
-    }
-    input[type=range] {
-      width: 100%;
-      accent-color: var(--accent);
-      cursor: pointer;
-    }
-
-    #loading-msg {
-      padding: 16px 14px;
-      font-size: 0.75rem;
-      color: var(--muted);
-      text-align: center;
-    }
-
-    /* WMS URL box */
-    .wms-box {
+    /* Info box */
+    #info-box {
       margin: 8px 12px 12px;
       background: var(--bg);
       border: 1px solid var(--border);
       border-radius: var(--radius);
       padding: 8px 10px;
-    }
-    .wms-box label {
-      font-size: 0.65rem;
+      font-size: 0.72rem;
       color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      display: block;
-      margin-bottom: 4px;
+      line-height: 1.5;
+      display: none;
     }
-    .wms-url {
-      font-size: 0.68rem;
-      color: var(--accent2);
-      word-break: break-all;
-      line-height: 1.4;
-    }
+    #info-box b { color: var(--accent); display: block; margin-bottom: 4px; }
 
-    /* ── MAP ── */
-    #map {
-      flex: 1;
-      background: #0a0f1e;
-    }
+    /* MAP */
+    #map { flex: 1; background: #0a0f1e; }
 
-    /* Leaflet overrides */
-    .leaflet-control-zoom a {
-      background: var(--panel) !important;
-      color: var(--accent) !important;
-      border-color: var(--border) !important;
-    }
-    .leaflet-control-attribution {
-      background: rgba(11,17,32,.85) !important;
-      color: var(--muted) !important;
-      font-size: 10px !important;
-    }
+    /* Leaflet */
+    .leaflet-control-zoom a { background: var(--panel) !important; color: var(--accent) !important; border-color: var(--border) !important; }
+    .leaflet-control-attribution { background: rgba(11,17,32,.85) !important; color: var(--muted) !important; font-size: 10px !important; }
     .leaflet-control-attribution a { color: var(--accent2) !important; }
 
-    /* ── COORDS BAR ── */
+    /* Coords */
     #coords-bar {
       background: var(--panel);
       border-top: 1px solid var(--border);
@@ -273,16 +179,20 @@
       color: var(--muted);
       letter-spacing: 1px;
       flex-shrink: 0;
-      display: flex;
-      gap: 24px;
-      align-items: center;
+      display: flex; gap: 24px; align-items: center;
     }
     #coords-bar span { color: var(--text); }
 
-    /* scrollbar */
     aside::-webkit-scrollbar { width: 4px; }
     aside::-webkit-scrollbar-track { background: var(--bg); }
     aside::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+    .loading-layer {
+      padding: 6px 12px;
+      font-size: 0.72rem;
+      color: var(--muted);
+      text-align: center;
+    }
   </style>
 </head>
 <body>
@@ -292,13 +202,11 @@
   <h1>Visor <span>FEDEPA</span></h1>
   <div class="header-right">
     <div id="status-dot"></div>
-    <div id="status-label">Conectando...</div>
+    <div id="status-label">Cargando...</div>
   </div>
 </header>
 
 <div class="main">
-
-  <!-- SIDEBAR -->
   <aside>
     <div class="section-title">Mapa base</div>
     <div class="basemap-grid">
@@ -308,28 +216,27 @@
       <button class="basemap-btn" data-base="dark">Oscuro</button>
     </div>
 
-    <div class="section-title">Capas WMS</div>
-    <div id="loading-msg">Cargando capas...</div>
-    <div id="layers-list"></div>
+    <div class="section-title">Capas</div>
+    <div id="layers-list">
+      <div class="loading-layer" id="load-msg">Cargando capas...</div>
+    </div>
 
-    <div class="section-title" style="margin-top:4px">Opacidad WMS</div>
+    <div class="section-title" style="margin-top:4px">Opacidad</div>
     <div class="opacity-wrap">
       <label id="opacity-label">Opacidad: 85%</label>
       <input type="range" id="opacity-slider" min="0" max="100" value="85"/>
     </div>
 
-    <div class="section-title">Servicio WMS</div>
-    <div class="wms-box">
-      <label>URL base</label>
-      <div class="wms-url" id="wms-url-display">https://wms.qgiscloud.com/Omylandivar/FEDEPA_final/</div>
+    <div class="section-title">Información</div>
+    <div id="info-box"></div>
+    <div style="padding:8px 12px 12px; font-size:0.68rem; color:var(--muted); line-height:1.5;">
+      Haz clic en cualquier objeto del mapa para ver sus atributos.
     </div>
   </aside>
 
-  <!-- MAP -->
   <div id="map"></div>
 </div>
 
-<!-- COORDS BAR -->
 <div id="coords-bar">
   <span>📍</span>
   Lat: <span id="c-lat">—</span>
@@ -338,181 +245,209 @@
 </div>
 
 <script>
-/* ── CONFIG ── */
-const WMS_URL = 'https://wms.qgiscloud.com/Omylandivar/FEDEPA_final/';
-const CAPS_URL = WMS_URL + '?SERVICE=WMS&REQUEST=GetCapabilities&VERSION=1.3.0';
+/* ── CONFIGURACIÓN ──
+   Cambia GITHUB_USER y REPO si en algún momento renombras el repositorio */
+const GITHUB_USER = 'omylandivar';
+const REPO        = 'Visor_Fedepa';
+const BRANCH      = 'main';
 
-/* ── BASEMAP TILES ── */
+// Capas GeoJSON: nombre del archivo (sin .geojson) y color
+const LAYERS = [
+  { file: 'FEDEPA_con_Coord', label: 'FEDEPA con Coord', color: '#00c6a7', fillColor: '#00c6a7' },
+  { file: 'Santa_Cruz_Dptos', label: 'Santa Cruz Dptos', color: '#ff9f43', fillColor: '#ff9f43' },
+];
+
+function geojsonURL(file) {
+  return `https://raw.githubusercontent.com/${GITHUB_USER}/${REPO}/${BRANCH}/${file}.geojson`;
+}
+
+/* ── BASEMAPS ── */
 const basemaps = {
-  osm: L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© OpenStreetMap contributors', maxZoom: 19
-  }),
-  satellite: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-    attribution: '© Esri', maxZoom: 19
-  }),
-  topo: L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
-    attribution: '© OpenTopoMap', maxZoom: 17
-  }),
-  dark: L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-    attribution: '© CartoDB', maxZoom: 19
-  })
+  osm:       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap', maxZoom: 19 }),
+  satellite: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { attribution: '© Esri', maxZoom: 19 }),
+  topo:      L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', { attribution: '© OpenTopoMap', maxZoom: 17 }),
+  dark:      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { attribution: '© CartoDB', maxZoom: 19 })
 };
 
-/* ── INIT MAP ── */
-const map = L.map('map', {
-  center: [-17.8, -63.2],
-  zoom: 10,
-  layers: [basemaps.osm],
-  zoomControl: true
+const map = L.map('map', { center: [-17.8, -63.2], zoom: 9, layers: [basemaps.osm] });
+
+/* ── COORDS ── */
+map.on('mousemove', e => {
+  document.getElementById('c-lat').textContent  = e.latlng.lat.toFixed(6);
+  document.getElementById('c-lng').textContent  = e.latlng.lng.toFixed(6);
 });
-
-/* ── STATE ── */
-let wmsLayers = {};       // name → L.tileLayer.wms
-let activeLayers = new Set();
-let currentOpacity = 0.85;
-
-/* ── COORDS BAR ── */
-const elLat   = document.getElementById('c-lat');
-const elLng   = document.getElementById('c-lng');
-const elZoom  = document.getElementById('c-zoom');
-
-function updateCoords(latlng) {
-  elLat.textContent  = latlng.lat.toFixed(6);
-  elLng.textContent  = latlng.lng.toFixed(6);
-}
-map.on('mousemove', e => updateCoords(e.latlng));
-map.on('zoomend',   () => elZoom.textContent = map.getZoom());
-elZoom.textContent = map.getZoom();
+map.on('zoomend', () => document.getElementById('c-zoom').textContent = map.getZoom());
+document.getElementById('c-zoom').textContent = map.getZoom();
 
 /* ── BASEMAP SWITCH ── */
 document.querySelectorAll('.basemap-btn').forEach(btn => {
   btn.addEventListener('click', () => {
-    const key = btn.dataset.base;
     Object.values(basemaps).forEach(l => map.removeLayer(l));
-    map.addLayer(basemaps[key]);
+    map.addLayer(basemaps[btn.dataset.base]);
     document.querySelectorAll('.basemap-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
   });
 });
 
 /* ── STATUS ── */
-const dot   = document.getElementById('status-dot');
-const label = document.getElementById('status-label');
-
 function setStatus(state, text) {
-  dot.className = state;
-  label.textContent = text;
+  document.getElementById('status-dot').className = state;
+  document.getElementById('status-label').textContent = text;
 }
 
-/* ── LOAD CAPABILITIES ── */
-const loadingMsg  = document.getElementById('loading-msg');
-const layersList  = document.getElementById('layers-list');
+/* ── GEOJSON LAYERS ── */
+let leafletLayers = {};
+let activeSet     = new Set();
+let currentOpacity = 0.85;
 
-async function loadCapabilities() {
-  try {
-    const resp = await fetch(CAPS_URL);
-    if (!resp.ok) throw new Error('HTTP ' + resp.status);
-    const xml  = await resp.text();
-    const parser = new DOMParser();
-    const doc  = parser.parseFromString(xml, 'application/xml');
+async function loadLayers() {
+  const list    = document.getElementById('layers-list');
+  const loadMsg = document.getElementById('load-msg');
+  let loaded = 0;
 
-    // Collect named layers (skip root layer)
-    const layerEls = doc.querySelectorAll('Layer > Layer');
-    const names = [];
-    layerEls.forEach(el => {
-      const nameEl = el.querySelector(':scope > Name');
-      if (nameEl && nameEl.textContent.trim()) {
-        names.push({
-          name:  nameEl.textContent.trim(),
-          title: (el.querySelector(':scope > Title') || nameEl).textContent.trim()
-        });
-      }
-    });
+  const bounds = [];
 
-    loadingMsg.remove();
+  for (const cfg of LAYERS) {
+    try {
+      const resp = await fetch(geojsonURL(cfg.file));
+      if (!resp.ok) throw new Error('HTTP ' + resp.status);
+      const data = await resp.json();
 
-    if (names.length === 0) {
-      // Fallback: use a single combined layer
-      addFallbackLayer();
-      setStatus('ok', 'Conectado (todas las capas)');
-      return;
+      const lyr = L.geoJSON(data, {
+        style: () => ({
+          color:       cfg.color,
+          fillColor:   cfg.fillColor,
+          weight:      1.5,
+          opacity:     currentOpacity,
+          fillOpacity: currentOpacity * 0.35
+        }),
+        pointToLayer: (feature, latlng) =>
+          L.circleMarker(latlng, {
+            radius: 6,
+            color: cfg.color,
+            fillColor: cfg.fillColor,
+            weight: 1.5,
+            opacity: currentOpacity,
+            fillOpacity: currentOpacity * 0.7
+          }),
+        onEachFeature: (feature, layer) => {
+          layer.on('click', () => showInfo(feature.properties, cfg.label));
+        }
+      });
+
+      leafletLayers[cfg.file] = lyr;
+
+      // Collect bounds
+      try {
+        const b = lyr.getBounds();
+        if (b.isValid()) bounds.push(b);
+      } catch(e) {}
+
+      loaded++;
+      buildLayerItem(cfg);
+    } catch(err) {
+      console.warn(`No se pudo cargar ${cfg.file}:`, err);
+      buildLayerItemError(cfg);
     }
-
-    names.forEach(({ name, title }) => buildLayerItem(name, title));
-
-    // Auto-activate first layer
-    if (names.length > 0) {
-      toggleLayer(names[0].name);
-    }
-
-    setStatus('ok', `Conectado · ${names.length} capa${names.length>1?'s':''}`);
-
-  } catch(err) {
-    console.warn('GetCapabilities failed:', err);
-    loadingMsg.textContent = '';
-    addFallbackLayer();
-    setStatus('err', 'WMS sin CORS — capa combinada');
   }
-}
 
-function addFallbackLayer() {
-  const name = '__all__';
-  const title = 'Todas las capas';
-  buildLayerItem(name, title);
-  toggleLayer(name);
-}
+  loadMsg.remove();
 
-function buildLayerItem(name, title) {
-  // Create WMS layer object (not added to map yet)
-  wmsLayers[name] = L.tileLayer.wms(WMS_URL, {
-    layers:      name === '__all__' ? '' : name,
-    format:      'image/png',
-    transparent: true,
-    version:     '1.3.0',
-    opacity:     currentOpacity,
-    attribution: 'QGIS Cloud · FEDEPA'
+  // Fit map to data
+  if (bounds.length > 0) {
+    let combined = bounds[0];
+    bounds.forEach(b => { combined = combined.extend(b); });
+    map.fitBounds(combined, { padding: [20, 20] });
+  }
+
+  setStatus('ok', `Cargado · ${loaded} capa${loaded !== 1 ? 's' : ''}`);
+
+  // Auto-activate all loaded layers
+  LAYERS.forEach(cfg => {
+    if (leafletLayers[cfg.file]) toggleLayer(cfg.file, true);
   });
+}
 
+function buildLayerItem(cfg) {
+  const list = document.getElementById('layers-list');
   const item = document.createElement('div');
   item.className = 'layer-item';
-  item.dataset.name = name;
+  item.dataset.file = cfg.file;
   item.innerHTML = `
     <div class="layer-check"></div>
-    <div class="layer-name">${title}</div>
+    <div class="layer-swatch" style="background:${cfg.color}"></div>
+    <div class="layer-name">${cfg.label}</div>
   `;
-  item.addEventListener('click', () => toggleLayer(name));
-  layersList.appendChild(item);
+  item.addEventListener('click', () => toggleLayer(cfg.file));
+  list.appendChild(item);
 }
 
-function toggleLayer(name) {
-  const item = document.querySelector(`.layer-item[data-name="${name}"]`);
-  if (!item) return;
+function buildLayerItemError(cfg) {
+  const list = document.getElementById('layers-list');
+  const item = document.createElement('div');
+  item.className = 'layer-item';
+  item.style.opacity = '0.4';
+  item.innerHTML = `
+    <div class="layer-swatch" style="background:#666"></div>
+    <div class="layer-name">${cfg.label} <small style="color:var(--danger)">(no encontrado)</small></div>
+  `;
+  list.appendChild(item);
+}
 
-  if (activeLayers.has(name)) {
-    activeLayers.delete(name);
-    map.removeLayer(wmsLayers[name]);
-    item.classList.remove('active');
-  } else {
-    activeLayers.add(name);
-    wmsLayers[name].addTo(map);
+function toggleLayer(file, forceOn) {
+  const item = document.querySelector(`.layer-item[data-file="${file}"]`);
+  const lyr  = leafletLayers[file];
+  if (!item || !lyr) return;
+
+  const shouldAdd = forceOn !== undefined ? forceOn : !activeSet.has(file);
+
+  if (shouldAdd) {
+    activeSet.add(file);
+    lyr.addTo(map);
     item.classList.add('active');
+  } else {
+    activeSet.delete(file);
+    map.removeLayer(lyr);
+    item.classList.remove('active');
   }
 }
 
-/* ── OPACITY SLIDER ── */
-const slider = document.getElementById('opacity-slider');
-const opLbl  = document.getElementById('opacity-label');
+/* ── INFO PANEL ── */
+function showInfo(props, layerName) {
+  const box = document.getElementById('info-box');
+  if (!props || Object.keys(props).length === 0) {
+    box.style.display = 'none';
+    return;
+  }
+  let html = `<b>📋 ${layerName}</b>`;
+  for (const [k, v] of Object.entries(props)) {
+    if (v !== null && v !== undefined && v !== '') {
+      html += `<div><span style="color:var(--muted)">${k}:</span> ${v}</div>`;
+    }
+  }
+  box.innerHTML = html;
+  box.style.display = 'block';
+}
 
+/* ── OPACITY ── */
+const slider = document.getElementById('opacity-slider');
 slider.addEventListener('input', () => {
   currentOpacity = parseInt(slider.value) / 100;
-  opLbl.textContent = `Opacidad: ${slider.value}%`;
-  activeLayers.forEach(name => {
-    if (wmsLayers[name]) wmsLayers[name].setOpacity(currentOpacity);
+  document.getElementById('opacity-label').textContent = `Opacidad: ${slider.value}%`;
+
+  LAYERS.forEach(cfg => {
+    const lyr = leafletLayers[cfg.file];
+    if (!lyr) return;
+    lyr.setStyle({
+      opacity: currentOpacity,
+      fillOpacity: currentOpacity * 0.35
+    });
   });
 });
 
 /* ── BOOT ── */
-loadCapabilities();
+setStatus('', 'Cargando...');
+loadLayers();
 </script>
 </body>
 </html>
