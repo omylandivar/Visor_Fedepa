@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Visor FEDEPA</title>
+
+  <!-- Leaflet -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Inconsolata:wght@300;400&display=swap" rel="stylesheet"/>
+
+  <style>
+    :root {
+      --bg:        #0b1120;
+      --panel:     #111827;
+      --border:    #1e3a5f;
+      --accent:    #00c6a7;
+      --accent2:   #0077ff;
+      --text:      #cde4f4;
+      --muted:     #4a7fa5;
+      --danger:    #ff4d6d;
+      --radius:    8px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inconsolata', monospace;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* ── HEADER ── */
+    header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 10px 20px;
+      background: var(--panel);
+      border-bottom: 1px solid var(--border);
+      z-index: 1000;
+      flex-shrink: 0;
+    }
+
+    .logo-dot {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: conic-gradient(var(--accent) 0%, var(--accent2) 50%, var(--accent) 100%);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px;
+      animation: spin 12s linear infinite;
+      flex-shrink: 0;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    header h1 {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 1.4rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: var(--accent);
+      text-transform: uppercase;
+    }
+
+    header h1 span { color: var(--text); }
+
+    .header-right {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    #status-dot {
+      width: 9px; height: 9px;
+      border-radius: 50%;
+      background: var(--muted);
+      transition: background .4s;
+      flex-shrink: 0;
+    }
+    #status-dot.ok   { background: var(--accent); box-shadow: 0 0 6px var(--accent); }
+    #status-dot.err  { background: var(--danger);  box-shadow: 0 0 6px var(--danger); }
+
+    #status-label {
+      font-size: 0.75rem;
+      color: var(--muted);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    /* ── MAIN LAYOUT ── */
+    .main {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    /* ── SIDEBAR ── */
+    aside {
+      width: 260px;
+      min-width: 260px;
+      background: var(--panel);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      z-index: 500;
+    }
+
+    .section-title {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 0.7rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding: 14px 16px 6px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* Basemaps */
+    .basemap-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      padding: 10px 12px;
+    }
+
+    .basemap-btn {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text);
+      font-family: 'Inconsolata', monospace;
+      font-size: 0.72rem;
+      padding: 8px 4px;
+      cursor: pointer;
+      text-align: center;
+      transition: all .2s;
+      letter-spacing: 0.5px;
+    }
+    .basemap-btn:hover    { border-color: var(--accent); color: var(--accent); }
+    .basemap-btn.active   { background: var(--accent); color: #000; border-color: var(--accent); font-weight: 600; }
+
+    /* WMS Layers */
+    #layers-list {
+      padding: 8px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .layer-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 8px 10px;
+      cursor: pointer;
+      transition: border-color .2s;
+    }
+    .layer-item:hover { border-color: var(--accent); }
+    .layer-item.active { border-color: var(--accent); }
+
+    .layer-check {
+      width: 16px; height: 16px;
+      border: 1.5px solid var(--muted);
+      border-radius: 3px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      transition: all .2s;
+    }
+    .layer-item.active .layer-check {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+    .layer-item.active .layer-check::after {
+      content: '✓';
+      font-size: 10px;
+      color: #000;
+      font-weight: bold;
+    }
+
+    .layer-name {
+      font-size: 0.78rem;
+      line-height: 1.3;
+      color: var(--text);
+      word-break: break-word;
+    }
+
+    .opacity-wrap {
+      padding: 0 12px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .opacity-wrap label {
+      font-size: 0.68rem;
+      color: var(--muted);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+    input[type=range] {
+      width: 100%;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+
+    #loading-msg {
+      padding: 16px 14px;
+      font-size: 0.75rem;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    /* WMS URL box */
+    .wms-box {
+      margin: 8px 12px 12px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 8px 10px;
+    }
+    .wms-box label {
+      font-size: 0.65rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      display: block;
+      margin-bottom: 4px;
+    }
+    .wms-url {
+      font-size: 0.68rem;
+      color: var(--accent2);
+      word-break: break-all;
+      line-height: 1.4;
+    }
+
+    /* ── MAP ── */
+    #map {
+      flex: 1;
+      background: #0a0f1e;
+    }
+
+    /* Leaflet overrides */
+    .leaflet-control-zoom a {
+      background: var(--panel) !important;
+      color: var(--accent) !important;
+      border-color: var(--border) !important;
+    }
+    .leaflet-control-attribution {
+      background: rgba(11,17,32,.85) !important;
+      color: var(--muted) !important;
+      font-size: 10px !important;
+    }
+    .leaflet-control-attribution a { color: var(--accent2) !important; }
+
+    /* ── COORDS BAR ── */
+    #coords-bar {
+      background: var(--panel);
+      border-top: 1px solid var(--border);
+      padding: 5px 16px;
+      font-size: 0.7rem;
+      color: var(--muted);
+      letter-spacing: 1px;
+      flex-shrink: 0;
+      display: flex;
+      gap: 24px;
+      align-items: center;
+    }
+    #coords-bar span { color: var(--text); }
+
+    /* scrollbar */
+    aside::-webkit-scrollbar { width: 4px; }
+    aside::-webkit-scrollbar-track { background: var(--bg); }
+    aside::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo-dot">🗺</div>
+  <h1>Visor <span>FEDEPA</span></h1>
+  <div class="header-right">
+    <div id="status-dot"></div>
+    <div id="status-label">Conectando...</div>
+  </div>
+</header>
+
+<div class="main">
+
+  <!-- SIDEBAR -->
+  <aside>
+    <div class="section-title">Mapa base</div>
+    <div class="basemap-grid">
+      <button class="basemap-btn active" data-base="osm">OpenStreet</button>
+      <button class="basemap-btn" data-base="satellite">Satélite</button>
+      <button class="basemap-btn" data-base="topo">Topográfico</button>
+      <button class="basemap-btn" data-base="dark">Oscuro</button>
+    </div>
+
+    <div class="section-title">Capas WMS</div>
+    <div id="loading-msg">Cargando capas...</div>
+    <div id="layers-list"></div>
+
+    <div class="section-title" style="margin-top:4px">Opacidad WMS</div>
+    <div class="opacity-wrap">
+      <label id="opacity-label">Opacidad: 85%</label>
+      <input type="range" id="opacity-slider" min="0" max="100" value="85"/>
+    </div>
+
+    <div class="section-title">Servicio WMS</div>
+    <div class="wms-box">
+      <label>URL base</label>
+      <div class="wms-url" id="wms-url-display">https://wms.qgiscloud.com/Omylandivar/FEDEPA_final/</div>
+    </div>
+  </aside>
+
+  <!-- MAP -->
+  <div id="map"></div>
+</div>
+
+<!-- COORDS BAR -->
+<div id="coords-bar">
+  <span>📍</span>
+  Lat: <span id="c-lat">—</span>
+  Lng: <span id="c-lng">—</span>
+  &nbsp;|&nbsp; Zoom: <span id="c-zoom">—</span>
+</div>
+
+<script>
+/* ── CONFIG ── */
+const WMS_URL = 'https://wms.qgiscloud.com/Omylandivar/FEDEPA_final/';
+const CAPS_URL = WMS_URL + '?SERVICE=WMS&REQUEST=GetCapabilities&VERSION=1.3.0';
+
+/* ── BASEMAP TILES ── */
+const basemaps = {
+  osm: L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap contributors', maxZoom: 19
+  }),
+  satellite: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+    attribution: '© Esri', maxZoom: 19
+  }),
+  topo: L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenTopoMap', maxZoom: 17
+  }),
+  dark: L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    attribution: '© CartoDB', maxZoom: 19
+  })
+};
+
+/* ── INIT MAP ── */
+const map = L.map('map', {
+  center: [-17.8, -63.2],
+  zoom: 10,
+  layers: [basemaps.osm],
+  zoomControl: true
+});
+
+/* ── STATE ── */
+let wmsLayers = {};       // name → L.tileLayer.wms
+let activeLayers = new Set();
+let currentOpacity = 0.85;
+
+/* ── COORDS BAR ── */
+const elLat   = document.getElementById('c-lat');
+const elLng   = document.getElementById('c-lng');
+const elZoom  = document.getElementById('c-zoom');
+
+function updateCoords(latlng) {
+  elLat.textContent  = latlng.lat.toFixed(6);
+  elLng.textContent  = latlng.lng.toFixed(6);
+}
+map.on('mousemove', e => updateCoords(e.latlng));
+map.on('zoomend',   () => elZoom.textContent = map.getZoom());
+elZoom.textContent = map.getZoom();
+
+/* ── BASEMAP SWITCH ── */
+document.querySelectorAll('.basemap-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const key = btn.dataset.base;
+    Object.values(basemaps).forEach(l => map.removeLayer(l));
+    map.addLayer(basemaps[key]);
+    document.querySelectorAll('.basemap-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  });
+});
+
+/* ── STATUS ── */
+const dot   = document.getElementById('status-dot');
+const label = document.getElementById('status-label');
+
+function setStatus(state, text) {
+  dot.className = state;
+  label.textContent = text;
+}
+
+/* ── LOAD CAPABILITIES ── */
+const loadingMsg  = document.getElementById('loading-msg');
+const layersList  = document.getElementById('layers-list');
+
+async function loadCapabilities() {
+  try {
+    const resp = await fetch(CAPS_URL);
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    const xml  = await resp.text();
+    const parser = new DOMParser();
+    const doc  = parser.parseFromString(xml, 'application/xml');
+
+    // Collect named layers (skip root layer)
+    const layerEls = doc.querySelectorAll('Layer > Layer');
+    const names = [];
+    layerEls.forEach(el => {
+      const nameEl = el.querySelector(':scope > Name');
+      if (nameEl && nameEl.textContent.trim()) {
+        names.push({
+          name:  nameEl.textContent.trim(),
+          title: (el.querySelector(':scope > Title') || nameEl).textContent.trim()
+        });
+      }
+    });
+
+    loadingMsg.remove();
+
+    if (names.length === 0) {
+      // Fallback: use a single combined layer
+      addFallbackLayer();
+      setStatus('ok', 'Conectado (todas las capas)');
+      return;
+    }
+
+    names.forEach(({ name, title }) => buildLayerItem(name, title));
+
+    // Auto-activate first layer
+    if (names.length > 0) {
+      toggleLayer(names[0].name);
+    }
+
+    setStatus('ok', `Conectado · ${names.length} capa${names.length>1?'s':''}`);
+
+  } catch(err) {
+    console.warn('GetCapabilities failed:', err);
+    loadingMsg.textContent = '';
+    addFallbackLayer();
+    setStatus('err', 'WMS sin CORS — capa combinada');
+  }
+}
+
+function addFallbackLayer() {
+  const name = '__all__';
+  const title = 'Todas las capas';
+  buildLayerItem(name, title);
+  toggleLayer(name);
+}
+
+function buildLayerItem(name, title) {
+  // Create WMS layer object (not added to map yet)
+  wmsLayers[name] = L.tileLayer.wms(WMS_URL, {
+    layers:      name === '__all__' ? '' : name,
+    format:      'image/png',
+    transparent: true,
+    version:     '1.3.0',
+    opacity:     currentOpacity,
+    attribution: 'QGIS Cloud · FEDEPA'
+  });
+
+  const item = document.createElement('div');
+  item.className = 'layer-item';
+  item.dataset.name = name;
+  item.innerHTML = `
+    <div class="layer-check"></div>
+    <div class="layer-name">${title}</div>
+  `;
+  item.addEventListener('click', () => toggleLayer(name));
+  layersList.appendChild(item);
+}
+
+function toggleLayer(name) {
+  const item = document.querySelector(`.layer-item[data-name="${name}"]`);
+  if (!item) return;
+
+  if (activeLayers.has(name)) {
+    activeLayers.delete(name);
+    map.removeLayer(wmsLayers[name]);
+    item.classList.remove('active');
+  } else {
+    activeLayers.add(name);
+    wmsLayers[name].addTo(map);
+    item.classList.add('active');
+  }
+}
+
+/* ── OPACITY SLIDER ── */
+const slider = document.getElementById('opacity-slider');
+const opLbl  = document.getElementById('opacity-label');
+
+slider.addEventListener('input', () => {
+  currentOpacity = parseInt(slider.value) / 100;
+  opLbl.textContent = `Opacidad: ${slider.value}%`;
+  activeLayers.forEach(name => {
+    if (wmsLayers[name]) wmsLayers[name].setOpacity(currentOpacity);
+  });
+});
+
+/* ── BOOT ── */
+loadCapabilities();
+</script>
+</body>
+</html>
