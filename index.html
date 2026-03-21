@@ -193,6 +193,21 @@
       color: var(--muted);
       text-align: center;
     }
+
+    /* Etiquetas de numeración sobre los puntos */
+    .fedepa-tooltip {
+      background: rgba(0,198,167,0.9) !important;
+      border: none !important;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.5) !important;
+      color: #000 !important;
+      font-family: 'Rajdhani', sans-serif !important;
+      font-size: 11px !important;
+      font-weight: 700 !important;
+      padding: 1px 5px !important;
+      border-radius: 3px !important;
+      white-space: nowrap !important;
+    }
+    .fedepa-tooltip::before { display: none !important; }
   </style>
 </head>
 <body>
@@ -321,15 +336,26 @@ async function loadLayers() {
           opacity:     currentOpacity,
           fillOpacity: currentOpacity * 0.35
         }),
-        pointToLayer: (feature, latlng) =>
-          L.circleMarker(latlng, {
+        pointToLayer: (feature, latlng) => {
+          const marker = L.circleMarker(latlng, {
             radius: 6,
             color: cfg.color,
             fillColor: cfg.fillColor,
             weight: 1.5,
             opacity: currentOpacity,
             fillOpacity: currentOpacity * 0.7
-          }),
+          });
+          // Etiqueta con campo "id"
+          if (feature.properties && feature.properties.id !== undefined) {
+            marker.bindTooltip(String(feature.properties.id), {
+              permanent: true,
+              direction: 'top',
+              offset: [0, -8],
+              className: 'fedepa-tooltip'
+            });
+          }
+          return marker;
+        },
         onEachFeature: (feature, layer) => {
           layer.on('click', () => showInfo(feature.properties, cfg.label));
         }
