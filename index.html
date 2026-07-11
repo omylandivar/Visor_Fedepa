@@ -266,28 +266,6 @@
     .tool-btn.active { background: var(--accent); color: #000; border-color: var(--accent); font-weight: 600; }
     .tool-btn .ic { font-size: 1rem; }
 
-    /* Info box */
-    #info-box {
-      margin: 8px 12px 12px;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 8px 10px;
-      font-size: 0.72rem;
-      color: var(--muted);
-      line-height: 1.5;
-      display: none;
-      max-height: 260px;
-      overflow-y: auto;
-    }
-    #info-box b { color: var(--accent); display: block; margin-bottom: 4px; }
-    #info-box .info-actions { margin-top: 6px; display: flex; gap: 6px; }
-    #info-box .info-actions button {
-      background: transparent; border: 1px solid var(--border); color: var(--muted);
-      border-radius: 4px; font-size: 0.65rem; padding: 3px 6px; cursor: pointer;
-    }
-    #info-box .info-actions button:hover { color: var(--accent); border-color: var(--accent); }
-
     /* MAP */
     #map { flex: 1; background: #0a0f1e; }
 
@@ -353,7 +331,7 @@
     }
     #copy-coords:hover { color: var(--accent); border-color: var(--accent); }
 
-    aside::-webkit-scrollbar, #search-results::-webkit-scrollbar, #info-box::-webkit-scrollbar { width: 4px; }
+    aside::-webkit-scrollbar, #search-results::-webkit-scrollbar, .info-scroll::-webkit-scrollbar { width: 4px; }
     aside::-webkit-scrollbar-track { background: var(--bg); }
     aside::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
 
@@ -400,6 +378,71 @@
     table.attr-table td { padding: 7px 10px; border-bottom: 1px solid var(--border); color: var(--text); white-space: nowrap; }
     table.attr-table tbody tr { cursor: pointer; }
     table.attr-table tbody tr:hover { background: rgba(0,198,167,0.08); }
+
+    /* Info modal (feature click popup) */
+    #info-modal {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.6);
+      z-index: 2100;
+      align-items: center; justify-content: center;
+      padding: 20px;
+    }
+    #info-modal .info-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      width: min(420px, 92vw);
+      max-height: 82vh;
+      display: flex; flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+    }
+    #info-modal header {
+      background: var(--bg);
+      display: flex; align-items: flex-start; justify-content: space-between;
+      padding: 14px 16px 10px;
+      border-bottom: 1px solid var(--border);
+      gap: 10px;
+    }
+    #info-modal-title { font-family:'Rajdhani',sans-serif; font-size: 1.15rem; color: var(--accent); letter-spacing: 0.5px; line-height: 1.2; word-break: break-word; }
+    #info-modal-subtitle { font-size: 0.7rem; color: var(--muted); margin-top: 2px; }
+    #info-modal-close {
+      background: transparent; border: 1px solid var(--border); color: var(--text);
+      border-radius: 4px; width: 26px; height: 26px; cursor: pointer; flex-shrink: 0;
+    }
+    #info-modal-close:hover { border-color: var(--danger); color: var(--danger); }
+    .info-scroll { padding: 12px 16px; overflow-y: auto; font-size: 0.82rem; line-height: 1.7; }
+    .info-scroll .info-row { display: flex; gap: 6px; border-bottom: 1px solid rgba(255,255,255,0.05); padding: 3px 0; }
+    .info-scroll .info-key { color: var(--muted); flex-shrink: 0; min-width: 110px; }
+    .info-scroll .info-val { color: var(--text); word-break: break-word; }
+    .info-modal-actions {
+      display: flex; gap: 8px;
+      padding: 10px 16px 14px;
+      border-top: 1px solid var(--border);
+      background: var(--bg);
+    }
+    .info-modal-actions button {
+      flex: 1;
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: var(--radius);
+      padding: 8px 6px;
+      font-size: 0.72rem;
+      cursor: pointer;
+      font-family: 'Inconsolata', monospace;
+    }
+    .info-modal-actions button:hover { border-color: var(--accent); color: var(--accent); }
+    .info-modal-actions button.copied { border-color: var(--accent); color: var(--accent); background: rgba(0,198,167,0.1); }
+
+    @media print {
+      body * { visibility: hidden; }
+      #info-modal, #info-modal .info-card, #info-print-area, #info-print-area * { visibility: visible; }
+      #info-modal { position: absolute; inset: auto; top: 0; left: 0; background: none; display: block !important; padding: 0; }
+      #info-modal .info-card { width: 100%; max-height: none; box-shadow: none; border: none; }
+      .no-print { display: none !important; }
+    }
 
     /* Mobile */
     @media (max-width: 720px) {
@@ -464,9 +507,8 @@
     </div>
 
     <div class="section-title">Información</div>
-    <div id="info-box"></div>
     <div id="info-hint" style="padding:8px 12px 12px; font-size:0.68rem; color:var(--muted); line-height:1.5;">
-      Haz clic en cualquier objeto del mapa para ver sus atributos.
+      Toca cualquier objeto del mapa para ver su información en una ventana emergente.
     </div>
   </aside>
 
@@ -502,6 +544,24 @@
         <thead><tr id="attr-thead"></tr></thead>
         <tbody id="attr-tbody"></tbody>
       </table>
+    </div>
+  </div>
+</div>
+
+<div id="info-modal">
+  <div class="info-card" id="info-print-area">
+    <header>
+      <div>
+        <h2 id="info-modal-title">—</h2>
+        <div id="info-modal-subtitle"></div>
+      </div>
+      <button id="info-modal-close" class="no-print">✕</button>
+    </header>
+    <div class="info-scroll" id="info-modal-body"></div>
+    <div class="info-modal-actions no-print">
+      <button id="info-copy">⧉ Copiar</button>
+      <button id="info-print">🖶 Imprimir</button>
+      <button id="info-share">↗ Compartir</button>
     </div>
   </div>
 </div>
@@ -851,31 +911,82 @@ document.getElementById('retry-btn').addEventListener('click', loadLayers);
 
 /* ── INFO PANEL ── */
 let lastFeatureLayer = null;
+let currentInfoText = '';
+
 function showInfo(props, layerName, titleField) {
-  const box = document.getElementById('info-box');
-  document.getElementById('info-hint').style.display = 'none';
-  if (!props || Object.keys(props).length === 0) {
-    box.style.display = 'none';
-    return;
-  }
+  if (!props || Object.keys(props).length === 0) return;
+
   const title = (titleField && props[titleField]) ? props[titleField] : layerName;
-  let html = `<b>📋 ${title}</b>`;
-  if (titleField && props[titleField]) {
-    html += `<div style="color:var(--muted); font-size:0.66rem; margin-top:-4px; margin-bottom:6px;">${layerName}</div>`;
-  }
+  const showSubtitle = titleField && props[titleField];
+
+  document.getElementById('info-modal-title').textContent = title;
+  document.getElementById('info-modal-subtitle').textContent = showSubtitle ? layerName : '';
+
+  const body = document.getElementById('info-modal-body');
+  body.innerHTML = '';
+  const lines = [`${title}`];
+  if (showSubtitle) lines.push(`(${layerName})`);
+
   for (const [k, v] of Object.entries(props)) {
     if (v !== null && v !== undefined && v !== '') {
-      html += `<div><span style="color:var(--muted)">${k}:</span> ${v}</div>`;
+      const row = document.createElement('div');
+      row.className = 'info-row';
+      row.innerHTML = `<span class="info-key">${k}</span><span class="info-val">${v}</span>`;
+      body.appendChild(row);
+      lines.push(`${k}: ${v}`);
     }
   }
-  html += `<div class="info-actions"><button id="info-close">Cerrar</button></div>`;
-  box.innerHTML = html;
-  box.style.display = 'block';
-  document.getElementById('info-close').addEventListener('click', () => {
-    box.style.display = 'none';
-    document.getElementById('info-hint').style.display = 'block';
-  });
+  currentInfoText = lines.join('\n');
+
+  document.getElementById('info-modal').style.display = 'flex';
 }
+
+function closeInfoModal() {
+  document.getElementById('info-modal').style.display = 'none';
+}
+
+document.getElementById('info-modal-close').addEventListener('click', closeInfoModal);
+document.getElementById('info-modal').addEventListener('click', (e) => {
+  if (e.target.id === 'info-modal') closeInfoModal();
+});
+
+document.getElementById('info-copy').addEventListener('click', async (e) => {
+  try {
+    await navigator.clipboard.writeText(currentInfoText);
+  } catch (err) {
+    const ta = document.createElement('textarea');
+    ta.value = currentInfoText;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+  }
+  const btn = e.currentTarget;
+  const original = btn.textContent;
+  btn.textContent = '✓ Copiado';
+  btn.classList.add('copied');
+  setTimeout(() => { btn.textContent = original; btn.classList.remove('copied'); }, 1500);
+});
+
+document.getElementById('info-print').addEventListener('click', () => {
+  window.print();
+});
+
+document.getElementById('info-share').addEventListener('click', async () => {
+  const title = document.getElementById('info-modal-title').textContent;
+  if (navigator.share) {
+    try {
+      await navigator.share({ title: 'Visor FEDEPA — ' + title, text: currentInfoText });
+    } catch (err) { /* usuario canceló, no hacer nada */ }
+  } else {
+    try {
+      await navigator.clipboard.writeText(currentInfoText);
+      alert('Tu navegador no soporta compartir directamente. Se copió la información al portapapeles para que la pegues donde quieras.');
+    } catch (err) {
+      alert('No se pudo compartir ni copiar automáticamente. Selecciona el texto manualmente.');
+    }
+  }
+});
 
 /* ── OPACITY ── */
 const slider = document.getElementById('opacity-slider');
