@@ -73,12 +73,23 @@
     #status-dot.err { background: var(--danger);  box-shadow: 0 0 6px var(--danger); }
     #status-label { font-size: 0.75rem; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; }
 
+    #sidebar-toggle {
+      display: none;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--accent);
+      border-radius: var(--radius);
+      width: 34px; height: 34px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
     /* LAYOUT */
-    .main { display: flex; flex: 1; overflow: hidden; }
+    .main { display: flex; flex: 1; overflow: hidden; position: relative; }
 
     /* SIDEBAR */
     aside {
-      width: 260px; min-width: 260px;
+      width: 280px; min-width: 280px;
       background: var(--panel);
       border-right: 1px solid var(--border);
       display: flex; flex-direction: column;
@@ -92,7 +103,11 @@
       color: var(--muted);
       padding: 14px 16px 6px;
       border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
+    .section-title small { color: var(--accent); letter-spacing: 0; text-transform: none; font-size: 0.68rem; }
 
     /* Basemaps */
     .basemap-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 10px 12px; }
@@ -111,6 +126,41 @@
     }
     .basemap-btn:hover  { border-color: var(--accent); color: var(--accent); }
     .basemap-btn.active { background: var(--accent); color: #000; border-color: var(--accent); font-weight: 600; }
+
+    /* Search */
+    .search-wrap { padding: 10px 12px; position: relative; }
+    #search-input {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text);
+      font-family: 'Inconsolata', monospace;
+      font-size: 0.78rem;
+      padding: 8px 10px;
+      outline: none;
+    }
+    #search-input:focus { border-color: var(--accent); }
+    #search-results {
+      margin-top: 6px;
+      max-height: 220px;
+      overflow-y: auto;
+      display: none;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .search-result-item {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 6px 8px;
+      font-size: 0.72rem;
+      cursor: pointer;
+    }
+    .search-result-item:hover { border-color: var(--accent); color: var(--accent); }
+    .search-result-item b { color: var(--text); display:block; }
+    .search-result-item:hover b { color: var(--accent); }
+    .search-empty { font-size: 0.7rem; color: var(--muted); padding: 4px 8px; }
 
     /* Layers */
     #layers-list { padding: 8px 12px; display: flex; flex-direction: column; gap: 6px; }
@@ -141,12 +191,80 @@
     }
     .layer-item.active .layer-check { background: var(--accent); border-color: var(--accent); }
     .layer-item.active .layer-check::after { content: '✓'; font-size: 10px; color: #000; font-weight: bold; }
-    .layer-name { font-size: 0.78rem; line-height: 1.3; color: var(--text); word-break: break-word; }
+    .layer-name { font-size: 0.78rem; line-height: 1.3; color: var(--text); word-break: break-word; flex: 1; }
+    .layer-count { font-size: 0.65rem; color: var(--muted); }
+    .layer-table-btn {
+      flex-shrink: 0;
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      border-radius: 4px;
+      font-size: 0.62rem;
+      padding: 2px 5px;
+      cursor: pointer;
+    }
+    .layer-table-btn:hover { color: var(--accent); border-color: var(--accent); }
+    .layer-expand-btn {
+      flex-shrink: 0;
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      border-radius: 4px;
+      font-size: 0.65rem;
+      width: 20px; height: 20px;
+      cursor: pointer;
+      transition: transform .2s, color .2s;
+    }
+    .layer-expand-btn:hover { color: var(--accent); border-color: var(--accent); }
+    .layer-expand-btn.open { transform: rotate(180deg); color: var(--accent); }
+    .sublayer-list {
+      display: none;
+      flex-direction: column;
+      gap: 3px;
+      margin: 4px 0 2px 6px;
+      padding: 6px 8px;
+      border-left: 2px solid var(--border);
+      max-height: 180px;
+      overflow-y: auto;
+    }
+    .sublayer-row {
+      display: flex; align-items: center; gap: 7px;
+      font-size: 0.71rem; color: var(--muted);
+      cursor: pointer;
+      padding: 2px 0;
+    }
+    .sublayer-row:hover { color: var(--text); }
+    .sublayer-row input[type=checkbox] { accent-color: var(--accent); cursor: pointer; }
+    .sublayer-tools { display: flex; gap: 6px; margin: 2px 0 4px 6px; }
+    .sublayer-tools button {
+      background: transparent; border: 1px solid var(--border); color: var(--muted);
+      border-radius: 4px; font-size: 0.63rem; padding: 3px 7px; cursor: pointer;
+    }
+    .sublayer-tools button:hover { color: var(--accent); border-color: var(--accent); }
 
     /* Opacity */
     .opacity-wrap { padding: 0 12px 12px; display: flex; flex-direction: column; gap: 4px; }
     .opacity-wrap label { font-size: 0.68rem; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; }
     input[type=range] { width: 100%; accent-color: var(--accent); cursor: pointer; }
+
+    /* Tools */
+    .tools-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 10px 12px; }
+    .tool-btn {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text);
+      font-family: 'Inconsolata', monospace;
+      font-size: 0.68rem;
+      padding: 8px 4px;
+      cursor: pointer;
+      text-align: center;
+      transition: all .2s;
+      display: flex; flex-direction: column; align-items: center; gap: 2px;
+    }
+    .tool-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .tool-btn.active { background: var(--accent); color: #000; border-color: var(--accent); font-weight: 600; }
+    .tool-btn .ic { font-size: 1rem; }
 
     /* Info box */
     #info-box {
@@ -159,16 +277,62 @@
       color: var(--muted);
       line-height: 1.5;
       display: none;
+      max-height: 260px;
+      overflow-y: auto;
     }
     #info-box b { color: var(--accent); display: block; margin-bottom: 4px; }
+    #info-box .info-actions { margin-top: 6px; display: flex; gap: 6px; }
+    #info-box .info-actions button {
+      background: transparent; border: 1px solid var(--border); color: var(--muted);
+      border-radius: 4px; font-size: 0.65rem; padding: 3px 6px; cursor: pointer;
+    }
+    #info-box .info-actions button:hover { color: var(--accent); border-color: var(--accent); }
 
     /* MAP */
     #map { flex: 1; background: #0a0f1e; }
+
+    /* Loading overlay */
+    #map-loading {
+      position: absolute; inset: 0;
+      background: rgba(11,17,32,0.75);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 12px;
+      z-index: 900;
+      font-family: 'Rajdhani', sans-serif;
+      color: var(--accent);
+      letter-spacing: 1px;
+      transition: opacity .3s;
+    }
+    .spinner {
+      width: 36px; height: 36px;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.9s linear infinite;
+    }
+    #map-loading.hidden { opacity: 0; pointer-events: none; }
+    #map-error {
+      display: none;
+      position: absolute; inset: 0;
+      background: rgba(11,17,32,0.92);
+      flex-direction: column; align-items: center; justify-content: center;
+      gap: 10px; z-index: 901; text-align: center; padding: 20px;
+    }
+    #map-error button {
+      background: var(--accent); border: none; color: #000; font-weight: 700;
+      padding: 8px 18px; border-radius: var(--radius); cursor: pointer; font-family: 'Rajdhani', sans-serif;
+    }
 
     /* Leaflet */
     .leaflet-control-zoom a { background: var(--panel) !important; color: var(--accent) !important; border-color: var(--border) !important; }
     .leaflet-control-attribution { background: rgba(11,17,32,.85) !important; color: var(--muted) !important; font-size: 10px !important; }
     .leaflet-control-attribution a { color: var(--accent2) !important; }
+    .leaflet-control-scale-line { background: rgba(11,17,32,.85) !important; color: var(--text) !important; border-color: var(--muted) !important; }
+    .leaflet-tooltip.fedepa-tooltip { background: rgba(0,198,167,0.9) !important; border: none !important; box-shadow: 0 1px 4px rgba(0,0,0,0.5) !important; color: #000 !important; font-family: 'Rajdhani', sans-serif !important; font-size: 11px !important; font-weight: 700 !important; padding: 1px 5px !important; border-radius: 3px !important; white-space: nowrap !important; }
+    .leaflet-tooltip.fedepa-tooltip::before { display: none !important; }
+    .leaflet-tooltip.dpto-tooltip { background: rgba(17,24,39,0.9) !important; border: 1px solid var(--accent2) !important; color: var(--text) !important; font-family: 'Rajdhani', sans-serif !important; font-size: 11px !important; }
+    .measure-tooltip { background: rgba(255,159,67,0.95) !important; border: none !important; color: #000 !important; font-weight: 700; font-size: 11px !important; border-radius: 3px; padding: 1px 6px; }
+    .measure-tooltip::before { display: none !important; }
 
     /* Coords */
     #coords-bar {
@@ -179,11 +343,17 @@
       color: var(--muted);
       letter-spacing: 1px;
       flex-shrink: 0;
-      display: flex; gap: 24px; align-items: center;
+      display: flex; gap: 20px; align-items: center;
     }
     #coords-bar span { color: var(--text); }
+    #copy-coords {
+      margin-left: auto;
+      background: transparent; border: 1px solid var(--border); color: var(--muted);
+      border-radius: 4px; font-size: 0.65rem; padding: 3px 8px; cursor: pointer;
+    }
+    #copy-coords:hover { color: var(--accent); border-color: var(--accent); }
 
-    aside::-webkit-scrollbar { width: 4px; }
+    aside::-webkit-scrollbar, #search-results::-webkit-scrollbar, #info-box::-webkit-scrollbar { width: 4px; }
     aside::-webkit-scrollbar-track { background: var(--bg); }
     aside::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
 
@@ -194,25 +364,62 @@
       text-align: center;
     }
 
-    /* Etiquetas de numeración sobre los puntos */
-    .fedepa-tooltip {
-      background: rgba(0,198,167,0.9) !important;
-      border: none !important;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.5) !important;
-      color: #000 !important;
-      font-family: 'Rajdhani', sans-serif !important;
-      font-size: 11px !important;
-      font-weight: 700 !important;
-      padding: 1px 5px !important;
-      border-radius: 3px !important;
-      white-space: nowrap !important;
+    /* Attribute table modal */
+    #table-modal {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.6);
+      z-index: 2000;
+      align-items: center; justify-content: center;
     }
-    .fedepa-tooltip::before { display: none !important; }
+    #table-modal .table-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      width: min(900px, 92vw);
+      max-height: 82vh;
+      display: flex; flex-direction: column;
+      overflow: hidden;
+    }
+    .table-card header {
+      justify-content: space-between;
+      background: var(--bg);
+    }
+    .table-card header h2 { font-family:'Rajdhani',sans-serif; font-size:1rem; color:var(--accent); letter-spacing:1px; }
+    #table-close { background:transparent; border:1px solid var(--border); color:var(--text); border-radius:4px; padding:4px 10px; cursor:pointer; }
+    #table-close:hover { border-color: var(--danger); color: var(--danger); }
+    .table-scroll { overflow: auto; padding: 0 4px 4px; }
+    table.attr-table { width: 100%; border-collapse: collapse; font-size: 0.75rem; }
+    table.attr-table th {
+      position: sticky; top:0;
+      background: var(--bg); color: var(--accent);
+      padding: 8px 10px; text-align: left; cursor: pointer;
+      border-bottom: 1px solid var(--border); white-space: nowrap;
+    }
+    table.attr-table th:hover { color: var(--accent2); }
+    table.attr-table td { padding: 7px 10px; border-bottom: 1px solid var(--border); color: var(--text); white-space: nowrap; }
+    table.attr-table tbody tr { cursor: pointer; }
+    table.attr-table tbody tr:hover { background: rgba(0,198,167,0.08); }
+
+    /* Mobile */
+    @media (max-width: 720px) {
+      #sidebar-toggle { display: inline-block; }
+      aside {
+        position: absolute; top: 0; bottom: 0; left: 0;
+        transform: translateX(-100%);
+        transition: transform .25s ease;
+        box-shadow: 4px 0 18px rgba(0,0,0,0.5);
+        width: 84vw; min-width: 0;
+      }
+      aside.open { transform: translateX(0); }
+      #coords-bar { font-size: 0.62rem; gap: 10px; flex-wrap: wrap; }
+    }
   </style>
 </head>
 <body>
 
 <header>
+  <button id="sidebar-toggle" title="Menú">☰</button>
   <div class="logo-dot">🗺</div>
   <h1>Visor <span>FEDEPA</span></h1>
   <div class="header-right">
@@ -222,13 +429,19 @@
 </header>
 
 <div class="main">
-  <aside>
+  <aside id="sidebar">
     <div class="section-title">Mapa base</div>
     <div class="basemap-grid">
       <button class="basemap-btn active" data-base="osm">OpenStreet</button>
       <button class="basemap-btn" data-base="satellite">Satélite</button>
       <button class="basemap-btn" data-base="topo">Topográfico</button>
       <button class="basemap-btn" data-base="dark">Oscuro</button>
+    </div>
+
+    <div class="section-title">Buscar</div>
+    <div class="search-wrap">
+      <input id="search-input" type="text" placeholder="Nombre, municipio, zona, depto..." autocomplete="off"/>
+      <div id="search-results"></div>
     </div>
 
     <div class="section-title">Capas</div>
@@ -242,14 +455,32 @@
       <input type="range" id="opacity-slider" min="0" max="100" value="85"/>
     </div>
 
+    <div class="section-title">Herramientas</div>
+    <div class="tools-grid">
+      <button class="tool-btn" id="tool-measure"><span class="ic">📏</span>Medir</button>
+      <button class="tool-btn" id="tool-locate"><span class="ic">📌</span>Ubicarme</button>
+      <button class="tool-btn" id="tool-fullscreen"><span class="ic">⛶</span>Pantalla</button>
+      <button class="tool-btn" id="tool-reset"><span class="ic">⟲</span>Reiniciar</button>
+    </div>
+
     <div class="section-title">Información</div>
     <div id="info-box"></div>
-    <div style="padding:8px 12px 12px; font-size:0.68rem; color:var(--muted); line-height:1.5;">
+    <div id="info-hint" style="padding:8px 12px 12px; font-size:0.68rem; color:var(--muted); line-height:1.5;">
       Haz clic en cualquier objeto del mapa para ver sus atributos.
     </div>
   </aside>
 
-  <div id="map"></div>
+  <div id="map">
+    <div id="map-loading">
+      <div class="spinner"></div>
+      <div>Cargando capas del mapa...</div>
+    </div>
+    <div id="map-error">
+      <div style="color:var(--danger); font-family:'Rajdhani',sans-serif; font-size:1.1rem;">⚠ No se pudieron cargar las capas</div>
+      <div style="color:var(--muted); font-size:0.8rem; max-width:320px;">Revisa tu conexión a internet. Si el problema persiste los archivos GeoJSON pueden haberse movido o renombrado.</div>
+      <button id="retry-btn">Reintentar</button>
+    </div>
+  </div>
 </div>
 
 <div id="coords-bar">
@@ -257,22 +488,52 @@
   Lat: <span id="c-lat">—</span>
   Lng: <span id="c-lng">—</span>
   &nbsp;|&nbsp; Zoom: <span id="c-zoom">—</span>
+  <button id="copy-coords" title="Copiar última coordenada">⧉ Copiar</button>
+</div>
+
+<div id="table-modal">
+  <div class="table-card">
+    <header>
+      <h2 id="table-title">Tabla de atributos</h2>
+      <button id="table-close">✕ Cerrar</button>
+    </header>
+    <div class="table-scroll">
+      <table class="attr-table" id="attr-table">
+        <thead><tr id="attr-thead"></tr></thead>
+        <tbody id="attr-tbody"></tbody>
+      </table>
+    </div>
+  </div>
 </div>
 
 <script>
 /* ── CONFIGURACIÓN ──
-   Cambia GITHUB_USER y REPO si en algún momento renombras el repositorio */
+   Los GeoJSON se intentan cargar primero por ruta relativa (rápido, mismo
+   repo, ideal para GitHub Pages). Si eso falla -por ejemplo al abrir el
+   HTML localmente con file:///, donde el navegador bloquea fetch entre
+   archivos locales por CORS- se reintenta automáticamente desde
+   raw.githubusercontent.com. */
 const GITHUB_USER = 'omylandivar';
 const REPO        = 'Visor_Fedepa';
 const BRANCH      = 'main';
 
-// Capas GeoJSON: nombre del archivo (sin .geojson) y color
 const LAYERS = [
-  { file: 'Fedepa_con_Coord', label: 'FEDEPA con Coord', color: '#00c6a7', fillColor: '#00c6a7' },
-  { file: 'Santa_Cruz_Dptos', label: 'Santa Cruz Dptos', color: '#ff9f43', fillColor: '#ff9f43' },
+  { file: 'Fedepa_con_Coord', label: 'FEDEPA con Coord', color: '#00c6a7', fillColor: '#00c6a7', type: 'points',
+    titleField: 'nom',
+    searchFields: ['nom', 'munic', 'uvicac', 'dpto', 'provin'],
+    tableFields: ['id', 'nom', 'munic', 'uvicac', 'has', 'lot_no'],
+    tableLabels: { id: 'ID', nom: 'Nombre', munic: 'Municipio', uvicac: 'Zona', has: 'Hectáreas', lot_no: 'Lote' } },
+  { file: 'Santa_Cruz_Dptos', label: 'Bolivia Departamentos', color: '#ff9f43', fillColor: '#ff9f43', type: 'polygons',
+    perFeatureToggle: true, nameField: 'nom_dep', titleField: 'nom_dep',
+    searchFields: ['nom_dep'],
+    tableFields: ['nom_dep', 'i_eco_e', 'i_edu_e', 'i_s_e'],
+    tableLabels: { nom_dep: 'Departamento', i_eco_e: 'Nivel económico', i_edu_e: 'Nivel educativo', i_s_e: 'Nivel salud' } },
 ];
 
 function geojsonURL(file) {
+  return `./${file}.geojson`;
+}
+function geojsonFallbackURL(file) {
   return `https://raw.githubusercontent.com/${GITHUB_USER}/${REPO}/${BRANCH}/${file}.geojson`;
 }
 
@@ -284,15 +545,33 @@ const basemaps = {
   dark:      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { attribution: '© CartoDB', maxZoom: 19 })
 };
 
-const map = L.map('map', { center: [-17.8, -63.2], zoom: 9, layers: [basemaps.osm] });
+const map = L.map('map', {
+  center: [-17.8, -63.2],
+  zoom: 9,
+  layers: [basemaps.osm],
+  preferCanvas: true   // Canvas en vez de SVG: mucho más rápido con polígonos pesados
+});
+
+L.control.scale({ imperial: false, position: 'bottomleft' }).addTo(map);
+map.zoomControl.setPosition('topright');
+
+let initialBounds = null;
 
 /* ── COORDS ── */
+let lastLatLng = null;
 map.on('mousemove', e => {
-  document.getElementById('c-lat').textContent  = e.latlng.lat.toFixed(6);
-  document.getElementById('c-lng').textContent  = e.latlng.lng.toFixed(6);
+  lastLatLng = e.latlng;
+  document.getElementById('c-lat').textContent = e.latlng.lat.toFixed(6);
+  document.getElementById('c-lng').textContent = e.latlng.lng.toFixed(6);
 });
 map.on('zoomend', () => document.getElementById('c-zoom').textContent = map.getZoom());
 document.getElementById('c-zoom').textContent = map.getZoom();
+
+document.getElementById('copy-coords').addEventListener('click', () => {
+  if (!lastLatLng) return;
+  const txt = `${lastLatLng.lat.toFixed(6)}, ${lastLatLng.lng.toFixed(6)}`;
+  navigator.clipboard?.writeText(txt).catch(() => {});
+});
 
 /* ── BASEMAP SWITCH ── */
 document.querySelectorAll('.basemap-btn').forEach(btn => {
@@ -310,25 +589,61 @@ function setStatus(state, text) {
   document.getElementById('status-label').textContent = text;
 }
 
+/* ── MOBILE SIDEBAR ── */
+const sidebar = document.getElementById('sidebar');
+document.getElementById('sidebar-toggle').addEventListener('click', () => {
+  sidebar.classList.toggle('open');
+});
+map.on('click', () => sidebar.classList.remove('open'));
+
 /* ── GEOJSON LAYERS ── */
 let leafletLayers = {};
-let activeSet     = new Set();
+let rawData       = {};
+let featureLayerIndex = {};
+let activeSet      = new Set();
 let currentOpacity = 0.85;
 
+function withTimeout(promise, ms) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), ms))
+  ]);
+}
+
 async function loadLayers() {
-  const list    = document.getElementById('layers-list');
-  const loadMsg = document.getElementById('load-msg');
+  const list        = document.getElementById('layers-list');
+  const loadMsg      = document.getElementById('load-msg');
+  const loadingBox   = document.getElementById('map-loading');
+  const errorBox     = document.getElementById('map-error');
+  errorBox.style.display = 'none';
+  loadingBox.classList.remove('hidden');
+  list.innerHTML = '';
+  list.appendChild(loadMsg);
+  leafletLayers = {};
+  rawData = {};
+  featureLayerIndex = {};
   let loaded = 0;
+  let anyFailed = false;
 
   const bounds = [];
 
   for (const cfg of LAYERS) {
     try {
-      const resp = await fetch(geojsonURL(cfg.file));
-      if (!resp.ok) throw new Error('HTTP ' + resp.status);
+      let resp;
+      try {
+        resp = await withTimeout(fetch(geojsonURL(cfg.file), { cache: 'force-cache' }), 8000);
+        if (!resp.ok) throw new Error('HTTP ' + resp.status);
+      } catch (localErr) {
+        // Ruta relativa falló (típico en file:// local) -> reintenta en remoto
+        console.warn(`Ruta local falló para ${cfg.file}, probando raw.githubusercontent.com...`, localErr);
+        resp = await withTimeout(fetch(geojsonFallbackURL(cfg.file)), 15000);
+        if (!resp.ok) throw new Error('HTTP ' + resp.status);
+      }
       const data = await resp.json();
+      rawData[cfg.file] = data;
 
       const lyr = L.geoJSON(data, {
+        renderer: L.canvas(),
         style: () => ({
           color:       cfg.color,
           fillColor:   cfg.fillColor,
@@ -360,55 +675,146 @@ async function loadLayers() {
           return L.marker(latlng, { icon });
         },
         onEachFeature: (feature, layer) => {
-          layer.on('click', () => showInfo(feature.properties, cfg.label));
+          layer.on('click', () => showInfo(feature.properties, cfg.label, cfg.titleField));
+          if (cfg.type === 'polygons' && feature.properties && feature.properties.nom_dep) {
+            layer.bindTooltip(feature.properties.nom_dep, { className: 'dpto-tooltip', sticky: true });
+          }
+          if (cfg.perFeatureToggle && cfg.nameField) {
+            const name = feature.properties[cfg.nameField] || 'Sin nombre';
+            if (!featureLayerIndex[cfg.file]) featureLayerIndex[cfg.file] = [];
+            featureLayerIndex[cfg.file].push({ name, layer, visible: true });
+          }
         }
       });
 
       leafletLayers[cfg.file] = lyr;
 
-      // Collect bounds
       try {
         const b = lyr.getBounds();
         if (b.isValid()) bounds.push(b);
       } catch(e) {}
 
       loaded++;
-      buildLayerItem(cfg);
+      buildLayerItem(cfg, countFeatures(data));
     } catch(err) {
       console.warn(`No se pudo cargar ${cfg.file}:`, err);
       buildLayerItemError(cfg);
+      anyFailed = true;
     }
   }
 
   loadMsg.remove();
+  loadingBox.classList.add('hidden');
 
-  // Fit map to data
+  if (loaded === 0) {
+    errorBox.style.display = 'flex';
+    setStatus('err', 'Error de carga');
+    return;
+  }
+
   if (bounds.length > 0) {
     let combined = bounds[0];
     bounds.forEach(b => { combined = combined.extend(b); });
     map.fitBounds(combined, { padding: [20, 20] });
+    initialBounds = combined;
   }
 
-  setStatus('ok', `Cargado · ${loaded} capa${loaded !== 1 ? 's' : ''}`);
+  setStatus(anyFailed ? 'err' : 'ok', anyFailed ? `Cargado parcial · ${loaded} capa${loaded !== 1 ? 's' : ''}` : `Cargado · ${loaded} capa${loaded !== 1 ? 's' : ''}`);
 
-  // Auto-activate all loaded layers
   LAYERS.forEach(cfg => {
     if (leafletLayers[cfg.file]) toggleLayer(cfg.file, true);
   });
 }
 
-function buildLayerItem(cfg) {
+function countFeatures(data) {
+  return (data && data.features) ? data.features.length : 0;
+}
+
+function buildLayerItem(cfg, count) {
   const list = document.getElementById('layers-list');
+
   const item = document.createElement('div');
   item.className = 'layer-item';
   item.dataset.file = cfg.file;
   item.innerHTML = `
     <div class="layer-check"></div>
     <div class="layer-swatch" style="background:${cfg.color}"></div>
-    <div class="layer-name">${cfg.label}</div>
+    <div class="layer-name">${cfg.label}<div class="layer-count">${count} elemento${count !== 1 ? 's' : ''}</div></div>
+    ${cfg.perFeatureToggle ? '<button class="layer-expand-btn" title="Elegir qué mostrar">▾</button>' : ''}
+    <button class="layer-table-btn" title="Ver tabla" data-tablefile="${cfg.file}">▤</button>
   `;
-  item.addEventListener('click', () => toggleLayer(cfg.file));
+  item.addEventListener('click', (e) => {
+    if (e.target.closest('.layer-table-btn') || e.target.closest('.layer-expand-btn')) return;
+    toggleLayer(cfg.file);
+  });
+  item.querySelector('.layer-table-btn').addEventListener('click', (e) => {
+    e.stopPropagation();
+    openTable(cfg);
+  });
   list.appendChild(item);
+
+  if (cfg.perFeatureToggle) {
+    const tools = document.createElement('div');
+    tools.className = 'sublayer-tools';
+    tools.style.display = 'none';
+    tools.innerHTML = `<button data-act="all">Mostrar todos</button><button data-act="none">Ocultar todos</button>`;
+
+    const subList = document.createElement('div');
+    subList.className = 'sublayer-list';
+    subList.id = `sublayers-${cfg.file}`;
+
+    list.appendChild(tools);
+    list.appendChild(subList);
+
+    const expandBtn = item.querySelector('.layer-expand-btn');
+    expandBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const opening = subList.style.display !== 'flex';
+      subList.style.display = opening ? 'flex' : 'none';
+      tools.style.display = opening ? 'flex' : 'none';
+      expandBtn.classList.toggle('open', opening);
+    });
+
+    tools.querySelectorAll('button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const show = btn.dataset.act === 'all';
+        subList.querySelectorAll('input[type=checkbox]').forEach(chk => {
+          if (chk.checked !== show) { chk.checked = show; chk.dispatchEvent(new Event('change')); }
+        });
+      });
+    });
+
+    buildSubLayerToggles(cfg);
+  }
+}
+
+function buildSubLayerToggles(cfg) {
+  const subList = document.getElementById(`sublayers-${cfg.file}`);
+  if (!subList) return;
+  subList.innerHTML = '';
+  const entries = featureLayerIndex[cfg.file] || [];
+  entries.sort((a, b) => a.name.localeCompare(b.name));
+  entries.forEach(entry => {
+    const row = document.createElement('label');
+    row.className = 'sublayer-row';
+    row.innerHTML = `<input type="checkbox" checked/><span>${entry.name}</span>`;
+    const checkbox = row.querySelector('input');
+    checkbox.addEventListener('change', () => {
+      const parentLyr = leafletLayers[cfg.file];
+      if (!parentLyr) return;
+      entry.visible = checkbox.checked;
+      if (checkbox.checked) {
+        parentLyr.addLayer(entry.layer);
+      } else {
+        parentLyr.removeLayer(entry.layer);
+      }
+    });
+    row.addEventListener('click', (e) => {
+      if (e.target.tagName === 'INPUT') return;
+      map.flyTo(entry.layer.getBounds ? entry.layer.getBounds().getCenter() : entry.layer.getLatLng(), 8, { duration: 0.6 });
+    });
+    subList.appendChild(row);
+  });
 }
 
 function buildLayerItemError(cfg) {
@@ -441,21 +847,34 @@ function toggleLayer(file, forceOn) {
   }
 }
 
+document.getElementById('retry-btn').addEventListener('click', loadLayers);
+
 /* ── INFO PANEL ── */
-function showInfo(props, layerName) {
+let lastFeatureLayer = null;
+function showInfo(props, layerName, titleField) {
   const box = document.getElementById('info-box');
+  document.getElementById('info-hint').style.display = 'none';
   if (!props || Object.keys(props).length === 0) {
     box.style.display = 'none';
     return;
   }
-  let html = `<b>📋 ${layerName}</b>`;
+  const title = (titleField && props[titleField]) ? props[titleField] : layerName;
+  let html = `<b>📋 ${title}</b>`;
+  if (titleField && props[titleField]) {
+    html += `<div style="color:var(--muted); font-size:0.66rem; margin-top:-4px; margin-bottom:6px;">${layerName}</div>`;
+  }
   for (const [k, v] of Object.entries(props)) {
     if (v !== null && v !== undefined && v !== '') {
       html += `<div><span style="color:var(--muted)">${k}:</span> ${v}</div>`;
     }
   }
+  html += `<div class="info-actions"><button id="info-close">Cerrar</button></div>`;
   box.innerHTML = html;
   box.style.display = 'block';
+  document.getElementById('info-close').addEventListener('click', () => {
+    box.style.display = 'none';
+    document.getElementById('info-hint').style.display = 'block';
+  });
 }
 
 /* ── OPACITY ── */
@@ -472,6 +891,205 @@ slider.addEventListener('input', () => {
       fillOpacity: currentOpacity * 0.35
     });
   });
+});
+
+/* ── BÚSQUEDA ── */
+const searchInput   = document.getElementById('search-input');
+const searchResults = document.getElementById('search-results');
+
+searchInput.addEventListener('input', () => {
+  const q = searchInput.value.trim().toLowerCase();
+  if (q.length < 2) { searchResults.style.display = 'none'; searchResults.innerHTML = ''; return; }
+
+  const matches = [];
+  LAYERS.forEach(cfg => {
+    const data = rawData[cfg.file];
+    if (!data) return;
+    data.features.forEach(feat => {
+      const props = feat.properties || {};
+      const hit = cfg.searchFields.some(f => String(props[f] ?? '').toLowerCase().includes(q));
+      if (hit) matches.push({ cfg, feat });
+    });
+  });
+
+  searchResults.innerHTML = '';
+  if (matches.length === 0) {
+    searchResults.innerHTML = '<div class="search-empty">Sin resultados</div>';
+  } else {
+    matches.slice(0, 25).forEach(({ cfg, feat }) => {
+      const props = feat.properties || {};
+      const title = props.nom || props.nom_dep || cfg.label;
+      const sub = [props.munic, props.uvicac, props.dpto].filter(Boolean).join(' · ');
+      const div = document.createElement('div');
+      div.className = 'search-result-item';
+      div.innerHTML = `<b>${title}</b>${sub}`;
+      div.addEventListener('click', () => flyToFeature(cfg, feat));
+      searchResults.appendChild(div);
+    });
+  }
+  searchResults.style.display = 'flex';
+});
+
+function flyToFeature(cfg, feat) {
+  if (!leafletLayers[cfg.file]) return;
+  if (!activeSet.has(cfg.file)) toggleLayer(cfg.file, true);
+  const geom = feat.geometry;
+  let latlng = null;
+  if (geom.type === 'MultiPoint') latlng = L.latLng(geom.coordinates[0][1], geom.coordinates[0][0]);
+  else if (geom.type === 'Point') latlng = L.latLng(geom.coordinates[1], geom.coordinates[0]);
+
+  if (latlng) {
+    map.flyTo(latlng, 14, { duration: 0.8 });
+  } else {
+    const tempLayer = L.geoJSON(feat);
+    const b = tempLayer.getBounds();
+    if (b.isValid()) map.flyToBounds(b, { duration: 0.8, padding: [40,40] });
+  }
+  showInfo(feat.properties, cfg.label, cfg.titleField);
+  searchResults.style.display = 'none';
+  searchInput.value = '';
+  sidebar.classList.remove('open');
+}
+
+/* ── TABLA DE ATRIBUTOS ── */
+const tableModal = document.getElementById('table-modal');
+document.getElementById('table-close').addEventListener('click', () => tableModal.style.display = 'none');
+tableModal.addEventListener('click', (e) => { if (e.target === tableModal) tableModal.style.display = 'none'; });
+
+let tableSortState = { field: null, asc: true };
+
+function openTable(cfg) {
+  const data = rawData[cfg.file];
+  if (!data) return;
+  document.getElementById('table-title').textContent = cfg.label + ' — Tabla de atributos';
+  renderTable(cfg, data.features);
+  tableModal.style.display = 'flex';
+}
+
+function renderTable(cfg, features) {
+  const thead = document.getElementById('attr-thead');
+  const tbody = document.getElementById('attr-tbody');
+  thead.innerHTML = '';
+  tbody.innerHTML = '';
+
+  cfg.tableFields.forEach(f => {
+    const th = document.createElement('th');
+    th.textContent = (cfg.tableLabels && cfg.tableLabels[f]) || f;
+    th.addEventListener('click', () => {
+      tableSortState.asc = tableSortState.field === f ? !tableSortState.asc : true;
+      tableSortState.field = f;
+      const sorted = [...features].sort((a, b) => {
+        const va = a.properties[f], vb = b.properties[f];
+        if (typeof va === 'number' && typeof vb === 'number') return tableSortState.asc ? va - vb : vb - va;
+        return tableSortState.asc
+          ? String(va ?? '').localeCompare(String(vb ?? ''))
+          : String(vb ?? '').localeCompare(String(va ?? ''));
+      });
+      renderTable(cfg, sorted);
+    });
+    thead.appendChild(th);
+  });
+
+  features.forEach(feat => {
+    const tr = document.createElement('tr');
+    cfg.tableFields.forEach(f => {
+      const td = document.createElement('td');
+      td.textContent = feat.properties[f] ?? '—';
+      tr.appendChild(td);
+    });
+    tr.addEventListener('click', () => {
+      tableModal.style.display = 'none';
+      flyToFeature(cfg, feat);
+    });
+    tbody.appendChild(tr);
+  });
+}
+
+/* ── HERRAMIENTA: MEDIR DISTANCIA ── */
+let measuring = false;
+let measurePoints = [];
+let measureLine = null;
+let measureMarkers = [];
+let measureTooltip = null;
+
+function haversineKm(a, b) {
+  return a.distanceTo(b) / 1000;
+}
+
+function updateMeasureTooltip() {
+  if (measurePoints.length < 2) return;
+  let total = 0;
+  for (let i = 1; i < measurePoints.length; i++) total += haversineKm(measurePoints[i-1], measurePoints[i]);
+  const last = measurePoints[measurePoints.length - 1];
+  if (measureTooltip) map.removeLayer(measureTooltip);
+  measureTooltip = L.tooltip({ permanent: true, direction: 'top', className: 'measure-tooltip' })
+    .setLatLng(last)
+    .setContent(`${total.toFixed(2)} km`)
+    .addTo(map);
+}
+
+function onMeasureClick(e) {
+  measurePoints.push(e.latlng);
+  const m = L.circleMarker(e.latlng, { radius: 4, color: '#ff9f43', fillColor: '#ff9f43', fillOpacity: 1 }).addTo(map);
+  measureMarkers.push(m);
+  if (measureLine) map.removeLayer(measureLine);
+  measureLine = L.polyline(measurePoints, { color: '#ff9f43', weight: 3, dashArray: '6,6' }).addTo(map);
+  updateMeasureTooltip();
+}
+
+function clearMeasure() {
+  measurePoints = [];
+  if (measureLine) { map.removeLayer(measureLine); measureLine = null; }
+  if (measureTooltip) { map.removeLayer(measureTooltip); measureTooltip = null; }
+  measureMarkers.forEach(m => map.removeLayer(m));
+  measureMarkers = [];
+}
+
+const measureBtn = document.getElementById('tool-measure');
+measureBtn.addEventListener('click', () => {
+  measuring = !measuring;
+  measureBtn.classList.toggle('active', measuring);
+  clearMeasure();
+  map.getContainer().style.cursor = measuring ? 'crosshair' : '';
+  if (measuring) {
+    map.on('click', onMeasureClick);
+  } else {
+    map.off('click', onMeasureClick);
+  }
+});
+
+/* ── HERRAMIENTA: UBICARME ── */
+let locateMarker = null;
+document.getElementById('tool-locate').addEventListener('click', () => {
+  map.locate({ setView: true, maxZoom: 15 });
+});
+map.on('locationfound', (e) => {
+  if (locateMarker) map.removeLayer(locateMarker);
+  locateMarker = L.circleMarker(e.latlng, { radius: 8, color: '#0077ff', fillColor: '#0077ff', fillOpacity: 0.5 }).addTo(map)
+    .bindPopup('Estás aquí (± ' + Math.round(e.accuracy) + ' m)').openPopup();
+});
+map.on('locationerror', () => {
+  alert('No se pudo obtener tu ubicación. Verifica los permisos del navegador.');
+});
+
+/* ── HERRAMIENTA: PANTALLA COMPLETA ── */
+const fsBtn = document.getElementById('tool-fullscreen');
+fsBtn.addEventListener('click', () => {
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen?.();
+  } else {
+    document.exitFullscreen?.();
+  }
+});
+document.addEventListener('fullscreenchange', () => {
+  fsBtn.classList.toggle('active', !!document.fullscreenElement);
+  setTimeout(() => map.invalidateSize(), 200);
+});
+
+/* ── HERRAMIENTA: REINICIAR VISTA ── */
+document.getElementById('tool-reset').addEventListener('click', () => {
+  if (initialBounds) map.fitBounds(initialBounds, { padding: [20, 20] });
+  clearMeasure();
 });
 
 /* ── BOOT ── */
