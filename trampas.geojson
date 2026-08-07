@@ -1,0 +1,1572 @@
+{
+ "type": "FeatureCollection",
+ "name": "Trampas_Picudo",
+ "crs": {
+  "type": "name",
+  "properties": {
+   "name": "urn:ogc:def:crs:OGC:1.3:CRS84"
+  }
+ },
+ "features": [
+  {
+   "type": "Feature",
+   "properties": {
+    "cod_trampa": "FED-01-T1",
+    "id_prod": 1,
+    "nom_prod": "Alejandro Godefroy",
+    "num_trampa": 1,
+    "munic": "Cotoca",
+    "uvicac": "Pailas",
+    "has_lote": 135,
+    "tipo": "Feromona (grandlure)",
+    "fecha_inst": "2026-04-06",
+    "campana": "2026",
+    "estado": "Activa",
+    "coord_provisional": "SI"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -62.57733336,
+     -17.67527503
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "cod_trampa": "FED-01-T2",
+    "id_prod": 1,
+    "nom_prod": "Alejandro Godefroy",
+    "num_trampa": 2,
+    "munic": "Cotoca",
+    "uvicac": "Pailas",
+    "has_lote": 135,
+    "tipo": "Feromona (grandlure)",
+    "fecha_inst": "2026-04-06",
+    "campana": "2026",
+    "estado": "Activa",
+    "coord_provisional": "SI"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -62.57289527,
+     -17.67735704
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "cod_trampa": "FED-01-T3",
+    "id_prod": 1,
+    "nom_prod": "Alejandro Godefroy",
+    "num_trampa": 3,
+    "munic": "Cotoca",
+    "uvicac": "Pailas",
+    "has_lote": 135,
+    "tipo": "Feromona (grandlure)",
+    "fecha_inst": "2026-04-06",
+    "campana": "2026",
+    "estado": "Activa",
+    "coord_provisional": "SI"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -62.57443743,
+     -17.68047085
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "cod_trampa": "FED-01-T4",
+    "id_prod": 1,
+    "nom_prod": "Alejandro Godefroy",
+    "num_trampa": 4,
+    "munic": "Cotoca",
+    "uvicac": "Pailas",
+    "has_lote": 135,
+    "tipo": "Feromona (grandlure)",
+    "fecha_inst": "2026-04-06",
+    "campana": "2026",
+    "estado": "Activa",
+    "coord_provisional": "SI"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -62.57889693,
+     -17.6811236
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "cod_trampa": "FED-01-T5",
+    "id_prod": 1,
+    "nom_prod": "Alejandro Godefroy",
+    "num_trampa": 5,
+    "munic": "Cotoca",
+    "uvicac": "Pailas",
+    "has_lote": 135,
+    "tipo": "Feromona (grandlure)",
+    "fecha_inst": "2026-04-06",
+    "campana": "2026",
+    "estado": "Activa",
+    "coord_provisional": "SI"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -62.57983893,
+     -17.67702939
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "cod_trampa": "FED-02-T1",
+    "id_prod": 2,
+    "nom_prod": "Armando Jurado",
+    "num_trampa": 1,
+    "munic": "Pailon",
+    "uvicac": "Los sauces Pailon sur",
+    "has_lote": 60,
+    "tipo": "Feromona (grandlure)",
+    "fecha_inst": "2026-04-06",
+    "campana": "2026",
+    "estado": "Activa",
+    "coord_provisional": "SI"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -62.57016756,
+     -17.69557998
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "cod_trampa": "FED-02-T2",
+    "id_prod": 2,
+    "nom_prod": "Armando Jurado",
+    "num_trampa": 2,
+    "munic": "Pailon",
+    "uvicac": "Los sauces Pailon sur",
+    "has_lote": 60,
+    "tipo": "Feromona (grandlure)",
+    "fecha_inst": "2026-04-06",
+    "campana": "2026",
+    "estado": "Activa",
+    "coord_provisional": "SI"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -62.56764748,
+     -17.69803769
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "cod_trampa": "FED-02-T3",
+    "id_prod": 2,
+    "nom_prod": "Armando Jurado",
+    "num_trampa": 3,
+    "munic": "Pailon",
+    "uvicac": "Los sauces Pailon sur",
+    "has_lote": 60,
+    "tipo": "Feromona (grandlure)",
+    "fecha_inst": "2026-04-06",
+    "campana": "2026",
+    "estado": "Activa",
+    "coord_provisional": "SI"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -62.56848911,
+     -17.70061435
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "cod_trampa": "FED-02-T4",
+    "id_prod": 2,
+    "nom_prod": "Armando Jurado",
+    "num_trampa": 4,
+    "munic": "Pailon",
+    "uvicac": "Los sauces Pailon sur",
+    "has_lote": 60,
+    "tipo": "Feromona (grandlure)",
+    "fecha_inst": "2026-04-06",
+    "campana": "2026",
+    "estado": "Activa",
+    "coord_provisional": "SI"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -62.57187847,
+     -17.70133608
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "cod_trampa": "FED-02-T5",
+    "id_prod": 2,
+    "nom_prod": "Armando Jurado",
+    "num_trampa": 5,
+    "munic": "Pailon",
+    "uvicac": "Los sauces Pailon sur",
+    "has_lote": 60,
+    "tipo": "Feromona (grandlure)",
+    "fecha_inst": "2026-04-06",
+    "campana": "2026",
+    "estado": "Activa",
+    "coord_provisional": "SI"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -62.57360365,
+     -17.69769138
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "cod_trampa": "FED-03-T1",
+    "id_prod": 3,
+    "nom_prod": "CIAGRO",
+    "num_trampa": 1,
+    "munic": "San Julian",
+    "uvicac": "San Julian",
+    "has_lote": 300,
+    "tipo": "Feromona (grandlure)",
+    "fecha_inst": "2026-04-06",
+    "campana": "2026",
+    "estado": "Activa",
+    "coord_provisional": "SI"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -62.56716132,
+     -17.70976884
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "cod_trampa": "FED-03-T2",
+    "id_prod": 3,
+    "nom_prod": "CIAGRO",
+    "num_trampa": 2,
+    "munic": "San Julian",
+    "uvicac": "San Julian",
+    "has_lote": 300,
+    "tipo": "Feromona (grandlure)",
+    "fecha_inst": "2026-04-06",
+    "campana": "2026",
+    "estado": "Activa",
+    "coord_provisional": "SI"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -62.5640956,
+     -17.71256856
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "cod_trampa": "FED-03-T3",
+    "id_prod": 3,
+    "nom_prod": "CIAGRO",
+    "num_trampa": 3,
+    "munic": "San Julian",
+    "uvicac": "San Julian",
+    "has_lote": 300,
+    "tipo": "Feromona (grandlure)",
+    "fecha_inst": "2026-04-06",
+    "campana": "2026",
+    "estado": "Activa",
+    "coord_provisional": "SI"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -62.56564562,
+     -17.71875432
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "cod_trampa": "FED-03-T4",
+    "id_prod": 3,
+    "nom_prod": "CIAGRO",
+    "num_trampa": 4,
+    "munic": "San Julian",
+    "uvicac": "San Julian",
+    "has_lote": 300,
+    "tipo": "Feromona (grandlure)",
+    "fecha_inst": "2026-04-06",
+    "campana": "2026",
+    "estado": "Activa",
+    "coord_provisional": "SI"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -62.57130904,
+     -17.71778627
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "cod_trampa": "FED-03-T5",
+    "id_prod": 3,
+    "nom_prod": "CIAGRO",
+    "num_trampa": 5,
+    "munic": "San Julian",
+    "uvicac": "San Julian",
+    "has_lote": 300,
+    "tipo": "Feromona (grandlure)",
+    "fecha_inst": "2026-04-06",
+    "campana": "2026",
+    "estado": "Activa",
+    "coord_provisional": "SI"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -62.57099365,
+     -17.71313973
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "cod_trampa": "FED-04-T1",
+    "id_prod": 4,
+    "nom_prod": "San Juan",
+    "num_trampa": 1,
+    "munic": "Pailon",
+    "uvicac": "Tres cruces",
+    "has_lote": 30,
+    "tipo": "Feromona (grandlure)",
+    "fecha_inst": "2026-04-06",
+    "campana": "2026",
+    "estado": "Activa",
+    "coord_provisional": "SI"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -62.55004579,
+     -17.70119187
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "cod_trampa": "FED-04-T2",
+    "id_prod": 4,
+    "nom_prod": "San Juan",
+    "num_trampa": 2,
+    "munic": "Pailon",
+    "uvicac": "Tres cruces",
+    "has_lote": 30,
+    "tipo": "Feromona (grandlure)",
+    "fecha_inst": "2026-04-06",
+    "campana": "2026",
+    "estado": "Activa",
+    "coord_provisional": "SI"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -62.54762783,
+     -17.70265558
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "cod_trampa": "FED-04-T3",
+    "id_prod": 4,
+    "nom_prod": "San Juan",
+    "num_trampa": 3,
+    "munic": "Pailon",
+    "uvicac": "Tres cruces",
+    "has_lote": 30,
+    "tipo": "Feromona (grandlure)",
+    "fecha_inst": "2026-04-06",
+    "campana": "2026",
+    "estado": "Activa",
+    "coord_provisional": "SI"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -62.54870178,
+     -17.70590483
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "cod_trampa": "FED-04-T4",
+    "id_prod": 4,
+    "nom_prod": "San Juan",
+    "num_trampa": 4,
+    "munic": "Pailon",
+    "uvicac": "Tres cruces",
+    "has_lote": 30,
+    "tipo": "Feromona (grandlure)",
+    "fecha_inst": "2026-04-06",
+    "campana": "2026",
+    "estado": "Activa",
+    "coord_provisional": "SI"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -62.55106621,
+     -17.70507209
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "cod_trampa": "FED-04-T5",
+    "id_prod": 4,
+    "nom_prod": "San Juan",
+    "num_trampa": 5,
+    "munic": "Pailon",
+    "uvicac": "Tres cruces",
+    "has_lote": 30,
+    "tipo": "Feromona (grandlure)",
+    "fecha_inst": "2026-04-06",
+    "campana": "2026",
+    "estado": "Activa",
+    "coord_provisional": "SI"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -62.55196986,
+     -17.70269032
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "cod_trampa": "FED-05-T1",
+    "id_prod": 5,
+    "nom_prod": "Abraham Ferh",
+    "num_trampa": 1,
+    "munic": "Charagua",
+    "uvicac": "Colonia Charagua",
+    "has_lote": 30,
+    "tipo": "Feromona (grandlure)",
+    "fecha_inst": "2026-04-06",
+    "campana": "2026",
+    "estado": "Activa",
+    "coord_provisional": "SI"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -62.55636545,
+     -17.67296998
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "cod_trampa": "FED-05-T2",
+    "id_prod": 5,
+    "nom_prod": "Abraham Ferh",
+    "num_trampa": 2,
+    "munic": "Charagua",
+    "uvicac": "Colonia Charagua",
+    "has_lote": 30,
+    "tipo": "Feromona (grandlure)",
+    "fecha_inst": "2026-04-06",
+    "campana": "2026",
+    "estado": "Activa",
+    "coord_provisional": "SI"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -62.5538963,
+     -17.67459052
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "cod_trampa": "FED-05-T3",
+    "id_prod": 5,
+    "nom_prod": "Abraham Ferh",
+    "num_trampa": 3,
+    "munic": "Charagua",
+    "uvicac": "Colonia Charagua",
+    "has_lote": 30,
+    "tipo": "Feromona (grandlure)",
+    "fecha_inst": "2026-04-06",
+    "campana": "2026",
+    "estado": "Activa",
+    "coord_provisional": "SI"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -62.55446328,
+     -17.67682964
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "cod_trampa": "FED-05-T4",
+    "id_prod": 5,
+    "nom_prod": "Abraham Ferh",
+    "num_trampa": 4,
+    "munic": "Charagua",
+    "uvicac": "Colonia Charagua",
+    "has_lote": 30,
+    "tipo": "Feromona (grandlure)",
+    "fecha_inst": "2026-04-06",
+    "campana": "2026",
+    "estado": "Activa",
+    "coord_provisional": "SI"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -62.55803393,
+     -17.67700879
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "cod_trampa": "FED-05-T5",
+    "id_prod": 5,
+    "nom_prod": "Abraham Ferh",
+    "num_trampa": 5,
+    "munic": "Charagua",
+    "uvicac": "Colonia Charagua",
+    "has_lote": 30,
+    "tipo": "Feromona (grandlure)",
+    "fecha_inst": "2026-04-06",
+    "campana": "2026",
+    "estado": "Activa",
+    "coord_provisional": "SI"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -62.55903785,
+     -17.67437781
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "cod_trampa": "FED-06-T1",
+    "id_prod": 6,
+    "nom_prod": "Abraham Frissen",
+    "num_trampa": 1,
+    "munic": "Charagua",
+    "uvicac": "Colonia Charagua",
+    "has_lote": 30,
+    "tipo": "Feromona (grandlure)",
+    "fecha_inst": "2026-04-06",
+    "campana": "2026",
+    "estado": "Activa",
+    "coord_provisional": "SI"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -62.53860053,
+     -17.71608254
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "cod_trampa": "FED-06-T2",
+    "id_prod": 6,
+    "nom_prod": "Abraham Frissen",
+    "num_trampa": 2,
+    "munic": "Charagua",
+    "uvicac": "Colonia Charagua",
+    "has_lote": 30,
+    "tipo": "Feromona (grandlure)",
+    "fecha_inst": "2026-04-06",
+    "campana": "2026",
+    "estado": "Activa",
+    "coord_provisional": "SI"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -62.53587767,
+     -17.71810405
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "cod_trampa": "FED-06-T3",
+    "id_prod": 6,
+    "nom_prod": "Abraham Frissen",
+    "num_trampa": 3,
+    "munic": "Charagua",
+    "uvicac": "Colonia Charagua",
+    "has_lote": 30,
+    "tipo": "Feromona (grandlure)",
+    "fecha_inst": "2026-04-06",
+    "campana": "2026",
+    "estado": "Activa",
+    "coord_provisional": "SI"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -62.53716611,
+     -17.71987206
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "cod_trampa": "FED-06-T4",
+    "id_prod": 6,
+    "nom_prod": "Abraham Frissen",
+    "num_trampa": 4,
+    "munic": "Charagua",
+    "uvicac": "Colonia Charagua",
+    "has_lote": 30,
+    "tipo": "Feromona (grandlure)",
+    "fecha_inst": "2026-04-06",
+    "campana": "2026",
+    "estado": "Activa",
+    "coord_provisional": "SI"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -62.53929503,
+     -17.7200902
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "cod_trampa": "FED-06-T5",
+    "id_prod": 6,
+    "nom_prod": "Abraham Frissen",
+    "num_trampa": 5,
+    "munic": "Charagua",
+    "uvicac": "Colonia Charagua",
+    "has_lote": 30,
+    "tipo": "Feromona (grandlure)",
+    "fecha_inst": "2026-04-06",
+    "campana": "2026",
+    "estado": "Activa",
+    "coord_provisional": "SI"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -62.54098522,
+     -17.71811316
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "cod_trampa": "FED-07-T1",
+    "id_prod": 7,
+    "nom_prod": "Jacobo Unger",
+    "num_trampa": 1,
+    "munic": "San Julian",
+    "uvicac": "Colonia Oriente",
+    "has_lote": 1000,
+    "tipo": "Feromona (grandlure)",
+    "fecha_inst": "2026-04-06",
+    "campana": "2026",
+    "estado": "Activa",
+    "coord_provisional": "SI"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -62.51894076,
+     -17.67228709
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "cod_trampa": "FED-07-T2",
+    "id_prod": 7,
+    "nom_prod": "Jacobo Unger",
+    "num_trampa": 2,
+    "munic": "San Julian",
+    "uvicac": "Colonia Oriente",
+    "has_lote": 1000,
+    "tipo": "Feromona (grandlure)",
+    "fecha_inst": "2026-04-06",
+    "campana": "2026",
+    "estado": "Activa",
+    "coord_provisional": "SI"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -62.51365577,
+     -17.67589318
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "cod_trampa": "FED-07-T3",
+    "id_prod": 7,
+    "nom_prod": "Jacobo Unger",
+    "num_trampa": 3,
+    "munic": "San Julian",
+    "uvicac": "Colonia Oriente",
+    "has_lote": 1000,
+    "tipo": "Feromona (grandlure)",
+    "fecha_inst": "2026-04-06",
+    "campana": "2026",
+    "estado": "Activa",
+    "coord_provisional": "SI"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -62.51650353,
+     -17.68196139
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "cod_trampa": "FED-07-T4",
+    "id_prod": 7,
+    "nom_prod": "Jacobo Unger",
+    "num_trampa": 4,
+    "munic": "San Julian",
+    "uvicac": "Colonia Oriente",
+    "has_lote": 1000,
+    "tipo": "Feromona (grandlure)",
+    "fecha_inst": "2026-04-06",
+    "campana": "2026",
+    "estado": "Activa",
+    "coord_provisional": "SI"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -62.52512349,
+     -17.681997
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "cod_trampa": "FED-07-T5",
+    "id_prod": 7,
+    "nom_prod": "Jacobo Unger",
+    "num_trampa": 5,
+    "munic": "San Julian",
+    "uvicac": "Colonia Oriente",
+    "has_lote": 1000,
+    "tipo": "Feromona (grandlure)",
+    "fecha_inst": "2026-04-06",
+    "campana": "2026",
+    "estado": "Activa",
+    "coord_provisional": "SI"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -62.52627965,
+     -17.67565573
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "cod_trampa": "FED-08-T1",
+    "id_prod": 8,
+    "nom_prod": "Jaime Mamani",
+    "num_trampa": 1,
+    "munic": "Cuatro Canadas",
+    "uvicac": "Enconada",
+    "has_lote": 30,
+    "tipo": "Feromona (grandlure)",
+    "fecha_inst": "2026-04-06",
+    "campana": "2026",
+    "estado": "Activa",
+    "coord_provisional": "SI"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -62.51818134,
+     -17.68810463
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "cod_trampa": "FED-08-T2",
+    "id_prod": 8,
+    "nom_prod": "Jaime Mamani",
+    "num_trampa": 2,
+    "munic": "Cuatro Canadas",
+    "uvicac": "Enconada",
+    "has_lote": 30,
+    "tipo": "Feromona (grandlure)",
+    "fecha_inst": "2026-04-06",
+    "campana": "2026",
+    "estado": "Activa",
+    "coord_provisional": "SI"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -62.51639066,
+     -17.69018192
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "cod_trampa": "FED-08-T3",
+    "id_prod": 8,
+    "nom_prod": "Jaime Mamani",
+    "num_trampa": 3,
+    "munic": "Cuatro Canadas",
+    "uvicac": "Enconada",
+    "has_lote": 30,
+    "tipo": "Feromona (grandlure)",
+    "fecha_inst": "2026-04-06",
+    "campana": "2026",
+    "estado": "Activa",
+    "coord_provisional": "SI"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -62.51764204,
+     -17.69272519
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "cod_trampa": "FED-08-T4",
+    "id_prod": 8,
+    "nom_prod": "Jaime Mamani",
+    "num_trampa": 4,
+    "munic": "Cuatro Canadas",
+    "uvicac": "Enconada",
+    "has_lote": 30,
+    "tipo": "Feromona (grandlure)",
+    "fecha_inst": "2026-04-06",
+    "campana": "2026",
+    "estado": "Activa",
+    "coord_provisional": "SI"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -62.52055033,
+     -17.6925514
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "cod_trampa": "FED-08-T5",
+    "id_prod": 8,
+    "nom_prod": "Jaime Mamani",
+    "num_trampa": 5,
+    "munic": "Cuatro Canadas",
+    "uvicac": "Enconada",
+    "has_lote": 30,
+    "tipo": "Feromona (grandlure)",
+    "fecha_inst": "2026-04-06",
+    "campana": "2026",
+    "estado": "Activa",
+    "coord_provisional": "SI"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -62.52155327,
+     -17.6900575
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "cod_trampa": "FED-09-T1",
+    "id_prod": 9,
+    "nom_prod": "Jesus Arce",
+    "num_trampa": 1,
+    "munic": "San Julian",
+    "uvicac": "Puerto Paz",
+    "has_lote": 50,
+    "tipo": "Feromona (grandlure)",
+    "fecha_inst": "2026-04-06",
+    "campana": "2026",
+    "estado": "Activa",
+    "coord_provisional": "SI"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -62.50590019,
+     -17.69821979
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "cod_trampa": "FED-09-T2",
+    "id_prod": 9,
+    "nom_prod": "Jesus Arce",
+    "num_trampa": 2,
+    "munic": "San Julian",
+    "uvicac": "Puerto Paz",
+    "has_lote": 50,
+    "tipo": "Feromona (grandlure)",
+    "fecha_inst": "2026-04-06",
+    "campana": "2026",
+    "estado": "Activa",
+    "coord_provisional": "SI"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -62.50382752,
+     -17.69972024
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "cod_trampa": "FED-09-T3",
+    "id_prod": 9,
+    "nom_prod": "Jesus Arce",
+    "num_trampa": 3,
+    "munic": "San Julian",
+    "uvicac": "Puerto Paz",
+    "has_lote": 50,
+    "tipo": "Feromona (grandlure)",
+    "fecha_inst": "2026-04-06",
+    "campana": "2026",
+    "estado": "Activa",
+    "coord_provisional": "SI"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -62.50433376,
+     -17.70289064
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "cod_trampa": "FED-09-T4",
+    "id_prod": 9,
+    "nom_prod": "Jesus Arce",
+    "num_trampa": 4,
+    "munic": "San Julian",
+    "uvicac": "Puerto Paz",
+    "has_lote": 50,
+    "tipo": "Feromona (grandlure)",
+    "fecha_inst": "2026-04-06",
+    "campana": "2026",
+    "estado": "Activa",
+    "coord_provisional": "SI"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -62.50738653,
+     -17.70273978
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "cod_trampa": "FED-09-T5",
+    "id_prod": 9,
+    "nom_prod": "Jesus Arce",
+    "num_trampa": 5,
+    "munic": "San Julian",
+    "uvicac": "Puerto Paz",
+    "has_lote": 50,
+    "tipo": "Feromona (grandlure)",
+    "fecha_inst": "2026-04-06",
+    "campana": "2026",
+    "estado": "Activa",
+    "coord_provisional": "SI"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -62.50887228,
+     -17.69965971
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "cod_trampa": "FED-10-T1",
+    "id_prod": 10,
+    "nom_prod": "Jesus Vasquez",
+    "num_trampa": 1,
+    "munic": "Pailon",
+    "uvicac": "Pailon sur",
+    "has_lote": 200,
+    "tipo": "Feromona (grandlure)",
+    "fecha_inst": "2026-04-06",
+    "campana": "2026",
+    "estado": "Activa",
+    "coord_provisional": "SI"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -62.507533,
+     -17.70507411
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "cod_trampa": "FED-10-T2",
+    "id_prod": 10,
+    "nom_prod": "Jesus Vasquez",
+    "num_trampa": 2,
+    "munic": "Pailon",
+    "uvicac": "Pailon sur",
+    "has_lote": 200,
+    "tipo": "Feromona (grandlure)",
+    "fecha_inst": "2026-04-06",
+    "campana": "2026",
+    "estado": "Activa",
+    "coord_provisional": "SI"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -62.50290055,
+     -17.70742789
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "cod_trampa": "FED-10-T3",
+    "id_prod": 10,
+    "nom_prod": "Jesus Vasquez",
+    "num_trampa": 3,
+    "munic": "Pailon",
+    "uvicac": "Pailon sur",
+    "has_lote": 200,
+    "tipo": "Feromona (grandlure)",
+    "fecha_inst": "2026-04-06",
+    "campana": "2026",
+    "estado": "Activa",
+    "coord_provisional": "SI"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -62.50527255,
+     -17.71203917
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "cod_trampa": "FED-10-T4",
+    "id_prod": 10,
+    "nom_prod": "Jesus Vasquez",
+    "num_trampa": 4,
+    "munic": "Pailon",
+    "uvicac": "Pailon sur",
+    "has_lote": 200,
+    "tipo": "Feromona (grandlure)",
+    "fecha_inst": "2026-04-06",
+    "campana": "2026",
+    "estado": "Activa",
+    "coord_provisional": "SI"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -62.5103199,
+     -17.71151128
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "cod_trampa": "FED-10-T5",
+    "id_prod": 10,
+    "nom_prod": "Jesus Vasquez",
+    "num_trampa": 5,
+    "munic": "Pailon",
+    "uvicac": "Pailon sur",
+    "has_lote": 200,
+    "tipo": "Feromona (grandlure)",
+    "fecha_inst": "2026-04-06",
+    "campana": "2026",
+    "estado": "Activa",
+    "coord_provisional": "SI"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -62.51149143,
+     -17.70774338
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "cod_trampa": "FED-11-T1",
+    "id_prod": 11,
+    "nom_prod": "Hernan Mansilla",
+    "num_trampa": 1,
+    "munic": "San Julian",
+    "uvicac": "Santo Domingo",
+    "has_lote": 150,
+    "tipo": "Feromona (grandlure)",
+    "fecha_inst": "2026-04-06",
+    "campana": "2026",
+    "estado": "Activa",
+    "coord_provisional": "SI"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -62.51622553,
+     -17.70972977
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "cod_trampa": "FED-11-T2",
+    "id_prod": 11,
+    "nom_prod": "Hernan Mansilla",
+    "num_trampa": 2,
+    "munic": "San Julian",
+    "uvicac": "Santo Domingo",
+    "has_lote": 150,
+    "tipo": "Feromona (grandlure)",
+    "fecha_inst": "2026-04-06",
+    "campana": "2026",
+    "estado": "Activa",
+    "coord_provisional": "SI"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -62.51194089,
+     -17.7127264
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "cod_trampa": "FED-11-T3",
+    "id_prod": 11,
+    "nom_prod": "Hernan Mansilla",
+    "num_trampa": 3,
+    "munic": "San Julian",
+    "uvicac": "Santo Domingo",
+    "has_lote": 150,
+    "tipo": "Feromona (grandlure)",
+    "fecha_inst": "2026-04-06",
+    "campana": "2026",
+    "estado": "Activa",
+    "coord_provisional": "SI"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -62.5128855,
+     -17.71652246
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "cod_trampa": "FED-11-T4",
+    "id_prod": 11,
+    "nom_prod": "Hernan Mansilla",
+    "num_trampa": 4,
+    "munic": "San Julian",
+    "uvicac": "Santo Domingo",
+    "has_lote": 150,
+    "tipo": "Feromona (grandlure)",
+    "fecha_inst": "2026-04-06",
+    "campana": "2026",
+    "estado": "Activa",
+    "coord_provisional": "SI"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -62.51854434,
+     -17.71582627
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "cod_trampa": "FED-11-T5",
+    "id_prod": 11,
+    "nom_prod": "Hernan Mansilla",
+    "num_trampa": 5,
+    "munic": "San Julian",
+    "uvicac": "Santo Domingo",
+    "has_lote": 150,
+    "tipo": "Feromona (grandlure)",
+    "fecha_inst": "2026-04-06",
+    "campana": "2026",
+    "estado": "Activa",
+    "coord_provisional": "SI"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -62.51822698,
+     -17.71248175
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "cod_trampa": "FED-12-T1",
+    "id_prod": 12,
+    "nom_prod": "Jose Luis Landivar",
+    "num_trampa": 1,
+    "munic": "Pailon",
+    "uvicac": "Pailon",
+    "has_lote": 60,
+    "tipo": "Feromona (grandlure)",
+    "fecha_inst": "2026-04-06",
+    "campana": "2026",
+    "estado": "Activa",
+    "coord_provisional": "SI"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -62.53347143,
+     -17.69826079
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "cod_trampa": "FED-12-T2",
+    "id_prod": 12,
+    "nom_prod": "Jose Luis Landivar",
+    "num_trampa": 2,
+    "munic": "Pailon",
+    "uvicac": "Pailon",
+    "has_lote": 60,
+    "tipo": "Feromona (grandlure)",
+    "fecha_inst": "2026-04-06",
+    "campana": "2026",
+    "estado": "Activa",
+    "coord_provisional": "SI"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -62.53042203,
+     -17.69946885
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "cod_trampa": "FED-12-T3",
+    "id_prod": 12,
+    "nom_prod": "Jose Luis Landivar",
+    "num_trampa": 3,
+    "munic": "Pailon",
+    "uvicac": "Pailon",
+    "has_lote": 60,
+    "tipo": "Feromona (grandlure)",
+    "fecha_inst": "2026-04-06",
+    "campana": "2026",
+    "estado": "Activa",
+    "coord_provisional": "SI"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -62.53141518,
+     -17.70300288
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "cod_trampa": "FED-12-T4",
+    "id_prod": 12,
+    "nom_prod": "Jose Luis Landivar",
+    "num_trampa": 4,
+    "munic": "Pailon",
+    "uvicac": "Pailon",
+    "has_lote": 60,
+    "tipo": "Feromona (grandlure)",
+    "fecha_inst": "2026-04-06",
+    "campana": "2026",
+    "estado": "Activa",
+    "coord_provisional": "SI"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -62.53398207,
+     -17.70291162
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "cod_trampa": "FED-12-T5",
+    "id_prod": 12,
+    "nom_prod": "Jose Luis Landivar",
+    "num_trampa": 5,
+    "munic": "Pailon",
+    "uvicac": "Pailon",
+    "has_lote": 60,
+    "tipo": "Feromona (grandlure)",
+    "fecha_inst": "2026-04-06",
+    "campana": "2026",
+    "estado": "Activa",
+    "coord_provisional": "SI"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -62.53628038,
+     -17.69983139
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "cod_trampa": "FED-13-T1",
+    "id_prod": 13,
+    "nom_prod": "Juan Pablo Penaranda",
+    "num_trampa": 1,
+    "munic": "San Julian",
+    "uvicac": "Puerto rico",
+    "has_lote": 95,
+    "tipo": "Feromona (grandlure)",
+    "fecha_inst": "2026-04-06",
+    "campana": "2026",
+    "estado": "Activa",
+    "coord_provisional": "SI"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -62.49257284,
+     -17.71378159
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "cod_trampa": "FED-13-T2",
+    "id_prod": 13,
+    "nom_prod": "Juan Pablo Penaranda",
+    "num_trampa": 2,
+    "munic": "San Julian",
+    "uvicac": "Puerto rico",
+    "has_lote": 95,
+    "tipo": "Feromona (grandlure)",
+    "fecha_inst": "2026-04-06",
+    "campana": "2026",
+    "estado": "Activa",
+    "coord_provisional": "SI"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -62.48884422,
+     -17.71573703
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "cod_trampa": "FED-13-T3",
+    "id_prod": 13,
+    "nom_prod": "Juan Pablo Penaranda",
+    "num_trampa": 3,
+    "munic": "San Julian",
+    "uvicac": "Puerto rico",
+    "has_lote": 95,
+    "tipo": "Feromona (grandlure)",
+    "fecha_inst": "2026-04-06",
+    "campana": "2026",
+    "estado": "Activa",
+    "coord_provisional": "SI"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -62.49003124,
+     -17.72021746
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "cod_trampa": "FED-13-T4",
+    "id_prod": 13,
+    "nom_prod": "Juan Pablo Penaranda",
+    "num_trampa": 4,
+    "munic": "San Julian",
+    "uvicac": "Puerto rico",
+    "has_lote": 95,
+    "tipo": "Feromona (grandlure)",
+    "fecha_inst": "2026-04-06",
+    "campana": "2026",
+    "estado": "Activa",
+    "coord_provisional": "SI"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -62.49401751,
+     -17.71948206
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "cod_trampa": "FED-13-T5",
+    "id_prod": 13,
+    "nom_prod": "Juan Pablo Penaranda",
+    "num_trampa": 5,
+    "munic": "San Julian",
+    "uvicac": "Puerto rico",
+    "has_lote": 95,
+    "tipo": "Feromona (grandlure)",
+    "fecha_inst": "2026-04-06",
+    "campana": "2026",
+    "estado": "Activa",
+    "coord_provisional": "SI"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -62.49471447,
+     -17.71669119
+    ]
+   }
+  }
+ ]
+}
