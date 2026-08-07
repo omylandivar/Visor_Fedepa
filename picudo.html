@@ -903,6 +903,24 @@ const map = L.map('map', {
 L.control.scale({ imperial: false, position: 'bottomleft' }).addTo(map);
 map.zoomControl.setPosition('topright');
 
+/* ── SINCRONIZAR EL MAPA CON SU CONTENEDOR ──
+   Leaflet solo escucha el resize de la ventana. Si el contenedor cambia de
+   tamaño por otra causa -girar el celular, pantalla dividida, abrir las
+   herramientas de desarrollo, o el navegador redimensionado por software-
+   el canvas queda con la escala vieja y los círculos se dibujan
+   deformados y enormes. El ResizeObserver lo corrige en cuanto ocurre. */
+let _resizeTimer = null;
+if (window.ResizeObserver) {
+  new ResizeObserver(() => {
+    clearTimeout(_resizeTimer);
+    _resizeTimer = setTimeout(() => {
+      map.invalidateSize({ animate: false });
+      document.getElementById('c-zoom').textContent = map.getZoom();
+    }, 120);
+  }).observe(map.getContainer());
+}
+window.addEventListener('orientationchange', () => setTimeout(() => map.invalidateSize({ animate: false }), 250));
+
 /* ── LEYENDA ── */
 const leyenda = L.control({ position: 'bottomright' });
 leyenda.onAdd = function() {
@@ -1193,6 +1211,7 @@ async function loadLayers() {
     bounds.forEach(b => { combined = combined.extend(b); });
     map.fitBounds(combined, { padding: [20, 20] });
     initialBounds = combined;
+    document.getElementById('c-zoom').textContent = map.getZoom();
   }
 
   // Encender capas: trampas y productores sí, departamentos no (ruido visual)
