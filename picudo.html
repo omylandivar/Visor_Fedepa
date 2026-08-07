@@ -132,6 +132,27 @@
     .stat .v.alert { color: var(--danger); }
     .stat .v.ok { color: var(--accent); }
 
+    /* Origen de los datos */
+    .fuente {
+      display: flex; align-items: center; gap: 7px; flex-wrap: wrap;
+      font-size: 0.66rem; color: var(--muted);
+      padding: 6px 8px; border-radius: 5px;
+      background: var(--bg); border: 1px solid var(--border);
+    }
+    .fuente .f-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--muted); flex-shrink: 0; }
+    .fuente.ok   { border-color: rgba(0,198,167,.4); color: var(--accent); }
+    .fuente.ok   .f-dot { background: var(--accent); box-shadow: 0 0 5px var(--accent); }
+    .fuente.resp { border-color: rgba(255,159,67,.45); color: var(--warn); }
+    .fuente.resp .f-dot { background: var(--warn); }
+    .fuente.err  { border-color: rgba(255,77,109,.5); color: var(--danger); }
+    .fuente.err  .f-dot { background: var(--danger); }
+    .fuente .f-avisos {
+      flex-basis: 100%; margin-top: 4px; padding-top: 4px;
+      border-top: 1px solid var(--border);
+      color: var(--warn); line-height: 1.45;
+    }
+    .fuente .f-avisos small { color: var(--muted); font-size: 0.92em; }
+
     /* ── CONTROL DE SEMANA ── */
     .semana-box { padding: 10px 12px; display: flex; flex-direction: column; gap: 8px; }
     .semana-label {
@@ -615,6 +636,7 @@
         <div class="stat"><div class="k">Picudos campaña</div><div class="v" id="st-total">—</div></div>
         <div class="stat"><div class="k">PTS semana</div><div class="v" id="st-pts">—</div></div>
       </div>
+      <div class="fuente" id="fuente-datos"><span class="f-dot"></span><span>Cargando…</span></div>
     </div>
 
     <div class="section-title">Semana de revisión</div>
@@ -736,11 +758,32 @@ const GITHUB_USER = 'omylandivar';
 const REPO        = 'Visor_Fedepa';
 const BRANCH      = 'main';
 
-/* Archivo CSV con las revisiones de trampas.
-   Se actualiza exportando desde KoboToolbox / Epicollect5 y subiendo
-   el archivo al repositorio. Columnas esperadas:
+/* ── FUENTES DE DATOS DE REVISIONES ──
+   Se prueban en orden. La primera que responda con datos válidos se usa,
+   y el visor muestra cuál fue.
+
+   1. La hoja de Google publicada como CSV. Es la fuente viva: el técnico
+      carga desde el celular y la web se actualiza sola.
+   2. El archivo del repositorio. Respaldo si Google falla, cambia el
+      enlace o alguien despublica la hoja por error.
+   3. La copia remota en GitHub, para cuando el HTML se abre localmente
+      con file:// y el navegador bloquea la ruta relativa.
+
+   Columnas esperadas en todas:
    campana, cod_trampa, fecha (AAAA-MM-DD), picudos, tecnico, observacion */
-const REVISIONES_FILE = 'revisiones';
+const FUENTES_REVISIONES = [
+  { nombre: 'Hoja de Google',
+    url: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQaAN7e1D98fe91axVXSoAykwd3RPyOilmPZ1AyZ3eL0a_xSLB7oQxt6YgOyHvHtA/pub?output=csv&gid=297990806',
+    viva: true, ms: 12000 },
+  { nombre: 'Archivo del repositorio', url: './revisiones.csv',  viva: false, ms: 8000 },
+  { nombre: 'Copia en GitHub',
+    url: `https://raw.githubusercontent.com/${'omylandivar'}/${'Visor_Fedepa'}/main/revisiones.csv`,
+    viva: false, ms: 15000 }
+];
+
+/* Capturas en una sola trampa y semana por encima de este número se marcan
+   como sospechosas. No se descartan: se avisan para que alguien las mire. */
+const VALOR_SOSPECHOSO = 100;
 
 /* Umbral de acción: capturas por trampa por semana (PTS) a partir del cual
    se genera una alerta. AJUSTAR según el protocolo técnico de FEDEPA. */
@@ -787,8 +830,6 @@ const LAYERS = [
 
 function geojsonURL(file)         { return `./${file}.geojson`; }
 function geojsonFallbackURL(file) { return `https://raw.githubusercontent.com/${GITHUB_USER}/${REPO}/${BRANCH}/${file}.geojson`; }
-function csvURL(file)             { return `./${file}.csv`; }
-function csvFallbackURL(file)     { return `https://raw.githubusercontent.com/${GITHUB_USER}/${REPO}/${BRANCH}/${file}.csv`; }
 
 /* ══════════════════════════════════════════════════════════════════
    UTILIDADES
@@ -909,17 +950,40 @@ map.zoomControl.setPosition('topright');
    herramientas de desarrollo, o el navegador redimensionado por software-
    el canvas queda con la escala vieja y los círculos se dibujan
    deformados y enormes. El ResizeObserver lo corrige en cuanto ocurre. */
-let _resizeTimer = null;
-if (window.ResizeObserver) {
-  new ResizeObserver(() => {
-    clearTimeout(_resizeTimer);
-    _resizeTimer = setTimeout(() => {
-      map.invalidateSize({ animate: false });
-      document.getElementById('c-zoom').textContent = map.getZoom();
-    }, 120);
-  }).observe(map.getContainer());
+function sincronizarMapa() {
+  map.invalidateSize({ animate: false });
+  const z = document.getElementById('c-zoom');
+  if (z) z.textContent = map.getZoom();
 }
-window.addEventListener('orientationchange', () => setTimeout(() => map.invalidateSize({ animate: false }), 250));
+
+let _resizeTimer = null;
+function pedirSincronizacion() {
+  clearTimeout(_resizeTimer);
+  _resizeTimer = setTimeout(sincronizarMapa, 120);
+}
+
+/* Vía rápida: reacciona al instante cuando el navegador la entrega. */
+if (window.ResizeObserver) {
+  new ResizeObserver(pedirSincronizacion).observe(map.getContainer());
+}
+window.addEventListener('orientationchange', () => setTimeout(sincronizarMapa, 250));
+
+/* Respaldo: la entrega de ResizeObserver depende de que la pestaña esté
+   pintando fotogramas, y hay situaciones donde no llega -pestaña en
+   segundo plano al momento del cambio, algunos navegadores móviles-.
+   Este vigilante compara las medidas una vez por segundo y corrige si
+   detecta desajuste. El costo es una comparación de dos enteros. */
+(function vigilarTamano() {
+  const cont = map.getContainer();
+  let anchoPrev = cont.clientWidth, altoPrev = cont.clientHeight;
+  setInterval(() => {
+    const a = cont.clientWidth, h = cont.clientHeight;
+    if (a !== anchoPrev || h !== altoPrev) {
+      anchoPrev = a; altoPrev = h;
+      sincronizarMapa();
+    }
+  }, 1000);
+})();
 
 /* ── LEYENDA ── */
 const leyenda = L.control({ position: 'bottomright' });
@@ -1008,6 +1072,8 @@ let semanaIdx    = 0;     // índice de la semana seleccionada
 let vistaModo    = 'semana';
 let trapMarkers  = {};    // cod_trampa -> L.circleMarker
 let trapProps    = {};    // cod_trampa -> properties
+let fuenteUsada  = null;  // de cuál de las FUENTES_REVISIONES salieron los datos
+let problemas    = { sinCodigo: 0, fechaMala: 0, picudoMalo: 0, sospechoso: 0, huerfano: 0 };
 
 function withTimeout(promise, ms) {
   return Promise.race([
@@ -1033,42 +1099,108 @@ async function fetchConFallback(urlLocal, urlRemota, msLocal, msRemoto) {
    CARGA DE REVISIONES (CSV)
    ══════════════════════════════════════════════════════════════════ */
 async function loadRevisiones() {
-  try {
-    const resp = await fetchConFallback(csvURL(REVISIONES_FILE), csvFallbackURL(REVISIONES_FILE), 8000, 15000);
-    const txt  = await resp.text();
-    const filas = parseCSV(txt);
+  fuenteUsada = null;
+  problemas = { sinCodigo: 0, fechaMala: 0, picudoMalo: 0, sospechoso: 0, huerfano: 0 };
 
-    revisiones   = [];
-    revPorTrampa = {};
-    const setFechas = new Set();
+  for (const fuente of FUENTES_REVISIONES) {
+    try {
+      const resp = await withTimeout(fetch(fuente.url, { cache: 'no-cache' }), fuente.ms);
+      if (!resp.ok) throw new Error('HTTP ' + resp.status);
+      const txt = await resp.text();
+      const filas = parseCSV(txt);
 
-    filas.forEach(f => {
-      const cod   = (f.cod_trampa || f.codigo || f.trampa || '').toUpperCase();
-      const fecha = (f.fecha || '').slice(0, 10);
-      if (!cod || !fecha) return;
-      const n = parseInt(f.picudos ?? f.capturas ?? f.n_picudos, 10);
-      const reg = {
-        cod_trampa: cod,
-        fecha,
-        picudos: isNaN(n) ? 0 : n,
-        tecnico: f.tecnico || '',
-        observacion: f.observacion || f.obs || '',
-        campana: f.campana || ''
-      };
-      revisiones.push(reg);
-      (revPorTrampa[cod] = revPorTrampa[cod] || []).push(reg);
-      setFechas.add(fecha);
-    });
+      const acum = [];
+      const idx  = {};
+      const setFechas = new Set();
+      const prob = { sinCodigo: 0, fechaMala: 0, picudoMalo: 0, sospechoso: 0, huerfano: 0 };
 
-    Object.values(revPorTrampa).forEach(arr => arr.sort((a, b) => a.fecha.localeCompare(b.fecha)));
-    semanas = [...setFechas].sort();
-    semanaIdx = Math.max(0, semanas.length - 1);
-    return true;
-  } catch (err) {
-    console.warn('No se pudieron cargar las revisiones:', err);
-    revisiones = []; revPorTrampa = {}; semanas = [];
-    return false;
+      filas.forEach(f => {
+        const cod   = (f.cod_trampa || f.codigo || f.trampa || '').trim().toUpperCase();
+        const fecha = (f.fecha || '').trim().slice(0, 10);
+        if (!cod)              { prob.sinCodigo++;  return; }
+        if (!parseFecha(fecha)) { prob.fechaMala++;  return; }
+
+        const bruto = String(f.picudos ?? f.capturas ?? f.n_picudos ?? '').trim();
+        if (bruto === '') return;          // no revisada: se omite, no es cero
+        const n = parseInt(bruto, 10);
+        if (isNaN(n) || n < 0)  { prob.picudoMalo++; return; }
+        if (n > VALOR_SOSPECHOSO) prob.sospechoso++;
+
+        const reg = { cod_trampa: cod, fecha, picudos: n,
+                      tecnico: (f.tecnico || '').trim(),
+                      observacion: (f.observacion || f.obs || '').trim(),
+                      campana: (f.campana || '').trim() };
+        acum.push(reg);
+        (idx[cod] = idx[cod] || []).push(reg);
+        setFechas.add(fecha);
+      });
+
+      // Una fuente que responde pero no trae datos utilizables no sirve:
+      // seguimos con la siguiente en vez de dejar el visor vacío.
+      if (!acum.length) throw new Error('sin registros utilizables');
+
+      revisiones   = acum;
+      revPorTrampa = idx;
+      Object.values(revPorTrampa).forEach(a => a.sort((x, y) => x.fecha.localeCompare(y.fecha)));
+      semanas   = [...setFechas].sort();
+      semanaIdx = Math.max(0, semanas.length - 1);
+      problemas = prob;
+      fuenteUsada = fuente;
+      console.info(`Revisiones cargadas desde: ${fuente.nombre} (${acum.length} registros)`);
+      return true;
+
+    } catch (err) {
+      console.warn(`Fuente "${fuente.nombre}" no disponible:`, err.message);
+    }
   }
+
+  console.error('Ninguna fuente de revisiones respondió.');
+  revisiones = []; revPorTrampa = {}; semanas = [];
+  return false;
+}
+
+/* Cruce contra la capa de trampas. Solo puede hacerse una vez que las
+   trampas están cargadas, por eso va aparte de loadRevisiones. */
+function validarCruce() {
+  const cods = new Set(Object.keys(trapProps));
+  if (!cods.size) return;
+  const faltantes = new Set();
+  revisiones.forEach(r => { if (!cods.has(r.cod_trampa)) faltantes.add(r.cod_trampa); });
+  problemas.huerfano = faltantes.size;
+  if (faltantes.size) {
+    console.warn('Códigos de trampa en las revisiones que no existen en trampas.geojson:',
+                 [...faltantes].join(', '));
+  }
+}
+
+/* Aviso visible: de dónde salieron los datos y si algo llamó la atención */
+function renderFuente() {
+  const box = document.getElementById('fuente-datos');
+  if (!box) return;
+
+  if (!fuenteUsada) {
+    box.className = 'fuente err';
+    box.innerHTML = `<span class="f-dot"></span><span>Sin datos de revisiones</span>`;
+    return;
+  }
+
+  box.className = 'fuente ' + (fuenteUsada.viva ? 'ok' : 'resp');
+  const etiqueta = fuenteUsada.viva
+    ? `Datos en vivo · ${fuenteUsada.nombre}`
+    : `Respaldo · ${fuenteUsada.nombre}`;
+  let html = `<span class="f-dot"></span><span>${etiqueta}</span>`;
+
+  const avisos = [];
+  if (problemas.huerfano)   avisos.push(`${problemas.huerfano} código${problemas.huerfano>1?'s':''} sin trampa`);
+  if (problemas.fechaMala)  avisos.push(`${problemas.fechaMala} fecha${problemas.fechaMala>1?'s':''} inválida${problemas.fechaMala>1?'s':''}`);
+  if (problemas.picudoMalo) avisos.push(`${problemas.picudoMalo} conteo${problemas.picudoMalo>1?'s':''} no numérico${problemas.picudoMalo>1?'s':''}`);
+  if (problemas.sospechoso) avisos.push(`${problemas.sospechoso} valor${problemas.sospechoso>1?'es':''} sobre ${VALOR_SOSPECHOSO}`);
+  if (problemas.sinCodigo)  avisos.push(`${problemas.sinCodigo} fila${problemas.sinCodigo>1?'s':''} sin código`);
+
+  if (avisos.length) {
+    html += `<div class="f-avisos">⚠ ${avisos.join(' · ')}<br><small>Revisá la hoja. El detalle está en la consola del navegador.</small></div>`;
+  }
+  box.innerHTML = html;
 }
 
 /* Valor a mostrar para una trampa según el modo de vista */
@@ -1219,8 +1351,10 @@ async function loadLayers() {
     if (leafletLayers[cfg.file]) toggleLayer(cfg.file, cfg.file !== 'Santa_Cruz_Dptos');
   });
 
+  validarCruce();
   initSemanaControl();
   refrescarVista();
+  renderFuente();
 
   const msg = !revOK
     ? 'Sin datos de revisiones'
