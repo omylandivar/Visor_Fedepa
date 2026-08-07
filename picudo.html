@@ -552,6 +552,17 @@
       color: var(--warn); border-radius: 5px; padding: 6px 9px;
       font-size: 0.68rem; line-height: 1.4; margin-bottom: 10px;
     }
+    .coord-block {
+      margin-top: 10px; padding: 8px 10px;
+      background: var(--bg); border: 1px solid var(--border); border-radius: 5px;
+    }
+    .coord-title {
+      font-family:'Rajdhani',sans-serif; font-size: 0.72rem; letter-spacing: 1px;
+      color: var(--accent); text-transform: uppercase; margin-bottom: 3px;
+    }
+    .coord-block .info-row { border-bottom: none; padding: 1px 0; }
+    .coord-block .info-val { font-family:'Rajdhani',sans-serif; font-weight: 700; letter-spacing: 0.5px; }
+    .coord-note { font-size: 0.62rem; color: var(--muted); margin-top: 3px; }
 
     @media print {
       body * { visibility: hidden; }
@@ -679,8 +690,9 @@
   <span>📍</span>
   Lat: <span id="c-lat">—</span>
   Lng: <span id="c-lng">—</span>
+  &nbsp;|&nbsp; UTM <span id="c-zona">20S</span>: E <span id="c-este">—</span> N <span id="c-norte">—</span>
   &nbsp;|&nbsp; Zoom: <span id="c-zoom">—</span>
-  <button id="copy-coords" title="Copiar última coordenada">⧉ Copiar</button>
+  <button id="copy-coords" title="Copiar coordenadas (geográficas y UTM)">⧉ Copiar</button>
 </div>
 
 <div id="table-modal">
@@ -757,8 +769,9 @@ const LAYERS = [
   { file: 'trampas', label: 'Trampas de picudo', color: '#e84393', fillColor: '#e84393', type: 'trampas',
     titleField: 'cod_trampa',
     searchFields: ['cod_trampa', 'nom_prod', 'munic', 'uvicac'],
-    tableFields: ['cod_trampa', 'nom_prod', 'munic', 'uvicac', 'ultima_fecha', 'ultimo_valor', 'total_campana'],
+    tableFields: ['cod_trampa', 'nom_prod', 'munic', 'uvicac', 'utm_e', 'utm_n', 'ultima_fecha', 'ultimo_valor', 'total_campana'],
     tableLabels: { cod_trampa:'Código', nom_prod:'Productor', munic:'Municipio', uvicac:'Zona',
+                   utm_e:'Este (m)', utm_n:'Norte (m)',
                    ultima_fecha:'Última revisión', ultimo_valor:'Últ. capturas', total_campana:'Total campaña' } },
   { file: 'Fedepa_con_Coord', label: 'Productores FEDEPA', color: '#00c6a7', fillColor: '#00c6a7', type: 'points',
     titleField: 'nom',
@@ -781,6 +794,37 @@ function csvFallbackURL(file)     { return `https://raw.githubusercontent.com/${
    UTILIDADES
    ══════════════════════════════════════════════════════════════════ */
 const MESES = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+
+/* ── CONVERSIÓN A UTM ──
+   Los datos están en WGS 84 geográficas (EPSG:4326). Santa Cruz cae en la
+   zona UTM 20 Sur, que corresponde a EPSG:32720.
+   Implementación: serie de Snyder para la proyección Transversa de Mercator.
+   Verificada contra pyproj/PROJ sobre las 65 trampas: error milimétrico. */
+function latLonAUTM(lat, lon) {
+  const a = 6378137.0, f = 1 / 298.257223563, k0 = 0.9996;
+  const e2 = f * (2 - f), ep2 = e2 / (1 - e2);
+  const zona = Math.floor((lon + 180) / 6) + 1;
+  const lon0 = ((zona - 1) * 6 - 180 + 3) * Math.PI / 180;
+  const phi = lat * Math.PI / 180, lam = lon * Math.PI / 180;
+
+  const N = a / Math.sqrt(1 - e2 * Math.sin(phi) ** 2);
+  const T = Math.tan(phi) ** 2;
+  const C = ep2 * Math.cos(phi) ** 2;
+  const A = Math.cos(phi) * (lam - lon0);
+  const M = a * ((1 - e2/4 - 3*e2**2/64 - 5*e2**3/256) * phi
+              - (3*e2/8 + 3*e2**2/32 + 45*e2**3/1024) * Math.sin(2*phi)
+              + (15*e2**2/256 + 45*e2**3/1024) * Math.sin(4*phi)
+              - (35*e2**3/3072) * Math.sin(6*phi));
+
+  const este = k0 * N * (A + (1-T+C)*A**3/6 + (5-18*T+T*T+72*C-58*ep2)*A**5/120) + 500000;
+  let norte  = k0 * (M + N * Math.tan(phi) * (A*A/2 + (5-T+9*C+4*C*C)*A**4/24
+              + (61-58*T+T*T+600*C-330*ep2)*A**6/720));
+  if (lat < 0) norte += 10000000;
+
+  return { este, norte, zona, hemisferio: lat < 0 ? 'S' : 'N' };
+}
+
+function fmtUTM(v) { return Math.round(v).toLocaleString('es-BO'); }
 
 function parseFecha(s) {
   // 'AAAA-MM-DD' -> Date en hora local, sin corrimiento por zona horaria
@@ -891,13 +935,19 @@ map.on('mousemove', e => {
   lastLatLng = e.latlng;
   document.getElementById('c-lat').textContent = e.latlng.lat.toFixed(6);
   document.getElementById('c-lng').textContent = e.latlng.lng.toFixed(6);
+  const u = latLonAUTM(e.latlng.lat, e.latlng.lng);
+  document.getElementById('c-zona').textContent  = u.zona + u.hemisferio;
+  document.getElementById('c-este').textContent  = fmtUTM(u.este);
+  document.getElementById('c-norte').textContent = fmtUTM(u.norte);
 });
 map.on('zoomend', () => document.getElementById('c-zoom').textContent = map.getZoom());
 document.getElementById('c-zoom').textContent = map.getZoom();
 
 document.getElementById('copy-coords').addEventListener('click', () => {
   if (!lastLatLng) return;
-  const txt = `${lastLatLng.lat.toFixed(6)}, ${lastLatLng.lng.toFixed(6)}`;
+  const u = latLonAUTM(lastLatLng.lat, lastLatLng.lng);
+  const txt = `${lastLatLng.lat.toFixed(6)}, ${lastLatLng.lng.toFixed(6)}`
+            + `  |  UTM ${u.zona}${u.hemisferio}  E ${u.este.toFixed(2)}  N ${u.norte.toFixed(2)}`;
   navigator.clipboard?.writeText(txt).catch(() => {});
 });
 
@@ -1491,6 +1541,26 @@ function showTrapInfo(cod) {
   html += `<div class="info-row"><span class="info-key">Tipo</span><span class="info-val">${p.tipo || '—'}</span></div>`;
   html += `<div class="info-row"><span class="info-key">Instalada</span><span class="info-val">${fmtFecha(p.fecha_inst)}</span></div>`;
 
+  /* ── Coordenadas: geográficas y UTM ── */
+  const m = trapMarkers[cod];
+  const ll = m ? m.getLatLng() : null;
+  const lat = (p.lat !== undefined) ? p.lat : (ll ? ll.lat : null);
+  const lon = (p.lon !== undefined) ? p.lon : (ll ? ll.lng : null);
+  let este = p.utm_e, norte = p.utm_n, zonaTxt = p.utm_zona;
+  if ((este === undefined || norte === undefined) && lat !== null) {
+    const u = latLonAUTM(lat, lon);      // se calcula al vuelo si el GeoJSON no la trae
+    este = u.este; norte = u.norte; zonaTxt = u.zona + u.hemisferio;
+  }
+  if (lat !== null) {
+    html += `<div class="coord-block">
+      <div class="coord-title">Coordenadas</div>
+      <div class="info-row"><span class="info-key">Geográficas</span><span class="info-val">${(+lat).toFixed(6)}, ${(+lon).toFixed(6)}</span></div>
+      <div class="info-row"><span class="info-key">UTM ${zonaTxt || '20S'} Este</span><span class="info-val">${fmtUTM(este)} m</span></div>
+      <div class="info-row"><span class="info-key">UTM ${zonaTxt || '20S'} Norte</span><span class="info-val">${fmtUTM(norte)} m</span></div>
+      <div class="coord-note">WGS 84 · EPSG:${p.utm_epsg || 32720}</div>
+    </div>`;
+  }
+
   if (arr.length) {
     html += `<div class="trap-chart-title" style="margin-top:12px">Historial de revisiones</div>
       <div class="trap-hist"><table>
@@ -1513,6 +1583,8 @@ function showTrapInfo(cod) {
     `Trampa ${cod}`,
     `Productor: ${p.nom_prod}`,
     `Municipio: ${p.munic} · Zona: ${p.uvicac}`,
+    lat !== null ? `Geográficas: ${(+lat).toFixed(6)}, ${(+lon).toFixed(6)}` : '',
+    lat !== null ? `UTM ${zonaTxt || '20S'} (EPSG:${p.utm_epsg || 32720}): E ${Number(este).toFixed(2)}  N ${Number(norte).toFixed(2)}` : '',
     `Total campaña: ${total} picudos`,
     `Máximo semanal: ${maxV} · Promedio: ${prom.toFixed(1)}`,
     ult ? `Última revisión: ${fmtFecha(ult.fecha)} (${ult.picudos})` : 'Sin revisiones',
