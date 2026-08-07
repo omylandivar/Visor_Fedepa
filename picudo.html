@@ -1111,7 +1111,14 @@ async function loadLayers() {
       });
 
       leafletLayers[cfg.file] = lyr;
-      try { const b = lyr.getBounds(); if (b.isValid()) bounds.push(b); } catch(e) {}
+
+      /* El encuadre inicial se calcula SOLO con las capas que arrancan
+         visibles (trampas y productores). Si se incluyeran los polígonos
+         departamentales, el mapa abriría mostrando toda Bolivia y las
+         trampas quedarían reducidas a un punto ilegible. */
+      if (cfg.type !== 'polygons') {
+        try { const b = lyr.getBounds(); if (b.isValid()) bounds.push(b); } catch(e) {}
+      }
 
       loaded++;
       buildLayerItem(cfg, countFeatures(data));
