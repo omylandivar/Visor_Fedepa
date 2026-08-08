@@ -132,6 +132,27 @@
     .stat .v.alert { color: var(--danger); }
     .stat .v.ok { color: var(--accent); }
 
+    /* Avance de la semana: cuántas trampas faltan revisar */
+    .pendientes {
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: 5px; padding: 7px 9px;
+      display: flex; flex-direction: column; gap: 5px;
+    }
+    .pendientes .p-barra {
+      height: 6px; border-radius: 3px; overflow: hidden;
+      background: rgba(255,255,255,0.07);
+    }
+    .pendientes .p-relleno {
+      height: 100%; width: 0%; border-radius: 3px;
+      background: var(--accent); transition: width .35s ease, background .35s;
+    }
+    .pendientes.parcial .p-relleno { background: var(--warn); }
+    .pendientes.completo .p-relleno { background: var(--accent); }
+    .pendientes .p-texto { font-size: 0.66rem; color: var(--muted); line-height: 1.4; }
+    .pendientes .p-texto b { font-family:'Rajdhani',sans-serif; font-size: 0.86rem; letter-spacing:.5px; }
+    .pendientes.parcial  .p-texto b { color: var(--warn); }
+    .pendientes.completo .p-texto b { color: var(--accent); }
+
     /* Origen de los datos */
     .fuente {
       display: flex; align-items: center; gap: 7px; flex-wrap: wrap;
@@ -636,6 +657,10 @@
         <div class="stat"><div class="k">Picudos campaña</div><div class="v" id="st-total">—</div></div>
         <div class="stat"><div class="k">PTS semana</div><div class="v" id="st-pts">—</div></div>
       </div>
+      <div class="pendientes" id="pendientes-box">
+        <div class="p-barra"><div class="p-relleno" id="p-relleno"></div></div>
+        <div class="p-texto" id="p-texto">—</div>
+      </div>
       <div class="fuente" id="fuente-datos"><span class="f-dot"></span><span>Cargando…</span></div>
     </div>
 
@@ -867,13 +892,45 @@ function latLonAUTM(lat, lon) {
 
 function fmtUTM(v) { return Math.round(v).toLocaleString('es-BO'); }
 
+/* ── LECTURA DE FECHAS ──
+   Se aceptan dos formatos, porque el dato puede llegar por dos caminos:
+     AAAA-MM-DD   como lo escribe la plantilla y el CSV del repositorio
+     DD/MM/AAAA   como lo escribe AppSheet y Google Sheets en español
+   Siempre se construye la fecha en hora local para que no se corra un día
+   por zona horaria. Devuelve null si no reconoce el formato. */
 function parseFecha(s) {
-  // 'AAAA-MM-DD' -> Date en hora local, sin corrimiento por zona horaria
   if (!s) return null;
-  const p = String(s).trim().slice(0, 10).split('-');
-  if (p.length !== 3) return null;
-  const d = new Date(+p[0], +p[1] - 1, +p[2]);
-  return isNaN(d) ? null : d;
+  const t = String(s).trim();
+  if (!t) return null;
+
+  let a, m, d;
+
+  // AAAA-MM-DD  (admite hora al final, se descarta)
+  let g = t.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+  if (g) { a = +g[1]; m = +g[2]; d = +g[3]; }
+  else {
+    // DD/MM/AAAA  o  D/M/AA   (también con guiones)
+    g = t.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})/);
+    if (!g) return null;
+    d = +g[1]; m = +g[2]; a = +g[3];
+    if (a < 100) a += 2000;
+    // Si el primer número no puede ser día, se asume MM/DD/AAAA
+    if (d > 31 || (d > 12 && m > 12)) return null;
+    if (d <= 12 && m > 12) { const x = d; d = m; m = x; }
+  }
+
+  if (m < 1 || m > 12 || d < 1 || d > 31) return null;
+  const f = new Date(a, m - 1, d);
+  // Rechaza fechas imposibles como el 31 de febrero, que Date "corrige" sola
+  if (f.getFullYear() !== a || f.getMonth() !== m - 1 || f.getDate() !== d) return null;
+  return f;
+}
+
+/* Clave uniforme AAAA-MM-DD para agrupar e indexar, venga como venga */
+function claveFecha(s) {
+  const f = parseFecha(s);
+  if (!f) return null;
+  return `${f.getFullYear()}-${String(f.getMonth()+1).padStart(2,'0')}-${String(f.getDate()).padStart(2,'0')}`;
 }
 function fmtFecha(s) {
   const d = parseFecha(s);
@@ -1115,10 +1172,12 @@ async function loadRevisiones() {
       const prob = { sinCodigo: 0, fechaMala: 0, picudoMalo: 0, sospechoso: 0, huerfano: 0 };
 
       filas.forEach(f => {
-        const cod   = (f.cod_trampa || f.codigo || f.trampa || '').trim().toUpperCase();
-        const fecha = (f.fecha || '').trim().slice(0, 10);
-        if (!cod)              { prob.sinCodigo++;  return; }
-        if (!parseFecha(fecha)) { prob.fechaMala++;  return; }
+        const cod = (f.cod_trampa || f.codigo || f.trampa || '').trim().toUpperCase();
+        // Se normaliza a AAAA-MM-DD venga como venga, así una misma semana
+        // no se parte en dos por haberse escrito en formatos distintos.
+        const fecha = claveFecha(f.fecha);
+        if (!cod)   { prob.sinCodigo++; return; }
+        if (!fecha) { prob.fechaMala++; return; }
 
         const bruto = String(f.picudos ?? f.capturas ?? f.n_picudos ?? '').trim();
         if (bruto === '') return;          // no revisada: se omite, no es cero
@@ -1437,9 +1496,56 @@ function refrescarVista() {
   elPts.textContent = revSemana.length ? pts.toFixed(1) : '—';
   elPts.className = 'v ' + (pts > UMBRAL_ACCION ? 'alert' : (pts === 0 ? 'ok' : ''));
 
-  // 4. Alertas y leyenda
+  // 4. Avance de la semana, alertas y leyenda
+  renderPendientes();
   renderAlertas();
   renderLeyenda();
+}
+
+/* ── AVANCE DE LA SEMANA ──
+   Con varios técnicos y sin zonas fijas, esto es lo que evita que dos vayan
+   a la misma trampa y otra quede sin revisar. Cuenta cuántas de las 65
+   tienen dato en la semana seleccionada, y quién viene cargando. */
+function renderPendientes() {
+  const caja  = document.getElementById('pendientes-box');
+  const barra = document.getElementById('p-relleno');
+  const texto = document.getElementById('p-texto');
+  if (!caja) return;
+
+  const cods = Object.keys(trapProps);
+  if (!cods.length || !semanas.length) {
+    caja.className = 'pendientes';
+    barra.style.width = '0%';
+    texto.textContent = '—';
+    return;
+  }
+
+  const f = semanas[semanaIdx];
+  const revisadas = cods.filter(c => (revPorTrampa[c] || []).some(r => r.fecha === f));
+  const hechas = revisadas.length, tot = cods.length;
+  const faltan = tot - hechas;
+  const pct = Math.round((hechas / tot) * 100);
+
+  caja.className = 'pendientes ' + (faltan === 0 ? 'completo' : 'parcial');
+  barra.style.width = pct + '%';
+
+  // Quiénes cargaron esta semana
+  const porTecnico = {};
+  revisadas.forEach(c => {
+    const r = revPorTrampa[c].find(x => x.fecha === f);
+    const t = (r && r.tecnico) ? r.tecnico : 'sin nombre';
+    porTecnico[t] = (porTecnico[t] || 0) + 1;
+  });
+  const equipo = Object.entries(porTecnico)
+    .sort((a, b) => b[1] - a[1])
+    .map(([t, n]) => `${t}: ${n}`)
+    .join(' · ');
+
+  texto.innerHTML = faltan === 0
+    ? `<b>Semana completa</b> · ${tot} de ${tot} trampas revisadas` +
+      (equipo ? `<br>${equipo}` : '')
+    : `<b>Faltan ${faltan}</b> de ${tot} trampas · ${pct}% revisado` +
+      (equipo ? `<br>${equipo}` : '');
 }
 
 /* ══════════════════════════════════════════════════════════════════
