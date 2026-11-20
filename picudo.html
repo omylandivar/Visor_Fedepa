@@ -7,6 +7,9 @@
 
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <!-- Agrupación de trampas al alejar el zoom -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css"/>
+  <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Inconsolata:wght@300;400&display=swap" rel="stylesheet"/>
 
   <style>
@@ -448,6 +451,17 @@
     .measure-tooltip { background: rgba(255,159,67,0.95) !important; border: none !important; color: #000 !important; font-weight: 700; font-size: 11px !important; border-radius: 3px; padding: 1px 6px; }
     .measure-tooltip::before { display: none !important; }
 
+    /* Grupos de trampas (al alejar el zoom). El color es el de la peor
+       trampa del grupo, para que un foco sobre el umbral no se esconda. */
+    .grupo-trampas { background: transparent; }
+    .grupo-trampas div {
+      width: 100%; height: 100%; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      border: 3px solid #fff; color: #0b1120;
+      font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 15px;
+      box-shadow: 0 0 0 4px rgba(11,17,32,.45), 0 2px 8px rgba(0,0,0,.6);
+    }
+
     /* Coords */
     #coords-bar {
       background: var(--panel);
@@ -848,6 +862,8 @@ const LAYERS = [
     tableLabels: { id: 'ID', nom: 'Nombre', munic: 'Municipio', uvicac: 'Zona', has: 'Hectáreas', lot_no: 'Lote' } },
   { file: 'Santa_Cruz_Dptos', label: 'Bolivia Departamentos', color: '#ff9f43', fillColor: '#ff9f43', type: 'polygons',
     perFeatureToggle: true, nameField: 'nom_dep', titleField: 'nom_dep',
+    /* Relleno tenue: la capa arranca encendida y el lote tiene que verse debajo */
+    fillFactor: 0.08, weight: 2,
     searchFields: ['nom_dep'],
     tableFields: ['nom_dep', 'i_eco_e', 'i_edu_e', 'i_s_e'],
     tableLabels: { nom_dep: 'Departamento', i_eco_e: 'Nivel económico', i_edu_e: 'Nivel educativo', i_s_e: 'Nivel salud' } },
@@ -988,8 +1004,19 @@ const basemaps = {
   osm:       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap', maxZoom: 19 }),
   satellite: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { attribution: '© Esri', maxZoom: 19 }),
   topo:      L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', { attribution: '© OpenTopoMap', maxZoom: 17 }),
-  dark:      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { attribution: '© CartoDB', maxZoom: 19 })
+  /* Oscuro: Esri Dark Gray (fondo + nombres). No pide clave, a diferencia
+     de CARTO dark_all, que ahora devuelve "API KEY REQUIRED". */
+  dark:      L.layerGroup([
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', { attribution: '© Esri', maxZoom: 19, maxNativeZoom: 16 }),
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}', { maxZoom: 19, maxNativeZoom: 16 })
+  ])
 };
+
+/* Las trampas son L.circleMarker; el agrupador espera estos dos métodos de
+   L.Marker en algunas animaciones. Se agregan vacíos para que no falle. */
+if (!L.CircleMarker.prototype.clusterHide) {
+  L.CircleMarker.include({ clusterHide() { return this; }, clusterShow() { return this; } });
+}
 
 const map = L.map('map', {
   center: [-17.8, -63.2],
@@ -997,6 +1024,10 @@ const map = L.map('map', {
   layers: [basemaps.satellite],
   preferCanvas: true
 });
+
+/* Panel propio para los grupos de trampas, encima de los marcadores de
+   productores: así el número del grupo nunca queda tapado. */
+map.createPane('grupos').style.zIndex = 610;
 
 L.control.scale({ imperial: false, position: 'bottomleft' }).addTo(map);
 map.zoomControl.setPosition('topright');
@@ -1128,6 +1159,7 @@ let semanas      = [];    // fechas únicas ordenadas
 let semanaIdx    = 0;     // índice de la semana seleccionada
 let vistaModo    = 'semana';
 let trapMarkers  = {};    // cod_trampa -> L.circleMarker
+let grupoTrampas = null;  // L.markerClusterGroup con las trampas
 let trapProps    = {};    // cod_trampa -> properties
 let fuenteUsada  = null;  // de cuál de las FUENTES_REVISIONES salieron los datos
 let problemas    = { sinCodigo: 0, fechaMala: 0, picudoMalo: 0, sospechoso: 0, huerfano: 0 };
@@ -1309,11 +1341,14 @@ async function loadLayers() {
       const data = await resp.json();
       rawData[cfg.file] = data;
 
+      /* Todas las capas usan el mismo lienzo del mapa (preferCanvas). Con un
+         lienzo por capa, el de arriba tapaba los clics del de abajo: con los
+         departamentos encendidos no se podían tocar las trampas. */
       const lyr = L.geoJSON(data, {
-        renderer: L.canvas(),
         style: () => ({
           color: cfg.color, fillColor: cfg.fillColor,
-          weight: 1.5, opacity: currentOpacity, fillOpacity: currentOpacity * 0.35
+          weight: cfg.weight || 1.5, opacity: currentOpacity,
+          fillOpacity: currentOpacity * (cfg.fillFactor ?? 0.35)
         }),
         pointToLayer: (feature, latlng) => {
           const p = feature.properties || {};
@@ -1357,7 +1392,11 @@ async function loadLayers() {
               return `${p.cod_trampa} · ${txt}`;
             }, { className: 'trampa-tooltip', direction: 'top', offset: [0, -8] });
           } else {
-            layer.on('click', () => showInfo(p, cfg.label, cfg.titleField));
+            layer.on('click', () => {
+              // Con Medir activo el clic marca un punto; no abre la ficha
+              if (measuring && cfg.type === 'polygons') return;
+              showInfo(p, cfg.label, cfg.titleField);
+            });
             if (cfg.type === 'polygons' && p.nom_dep) {
               layer.bindTooltip(p.nom_dep, { className: 'dpto-tooltip', sticky: true });
             }
@@ -1369,7 +1408,24 @@ async function loadLayers() {
         }
       });
 
-      leafletLayers[cfg.file] = lyr;
+      if (cfg.type === 'trampas' && L.markerClusterGroup) {
+        /* AGRUPACIÓN: al alejar el zoom, las trampas muy juntas se reúnen en
+           un círculo con el número de trampas que contiene. Acercando, el
+           grupo se abre. Desde el zoom 14 se ven siempre sueltas. */
+        grupoTrampas = L.markerClusterGroup({
+          maxClusterRadius: 60,
+          disableClusteringAtZoom: 14,
+          spiderfyOnMaxZoom: false,
+          showCoverageOnHover: false,
+          zoomToBoundsOnClick: true,
+          clusterPane: 'grupos',   // por encima de los productores
+          iconCreateFunction: iconoGrupoTrampas
+        });
+        grupoTrampas.addLayers(lyr.getLayers());
+        leafletLayers[cfg.file] = grupoTrampas;
+      } else {
+        leafletLayers[cfg.file] = lyr;
+      }
 
       /* El encuadre inicial se calcula SOLO con las capas que arrancan
          visibles (trampas y productores). Si se incluyeran los polígonos
@@ -1405,10 +1461,9 @@ async function loadLayers() {
     document.getElementById('c-zoom').textContent = map.getZoom();
   }
 
-  // Encender capas: trampas y productores sí, departamentos no (ruido visual)
-  LAYERS.forEach(cfg => {
-    if (leafletLayers[cfg.file]) toggleLayer(cfg.file, cfg.file !== 'Santa_Cruz_Dptos');
-  });
+  // Encender las tres capas. Los departamentos se dibujan con relleno tenue
+  // y quedan por debajo de las trampas (ver toggleLayer).
+  encenderCapasIniciales();
 
   validarCruce();
   initSemanaControl();
@@ -1422,6 +1477,47 @@ async function loadLayers() {
 }
 
 function countFeatures(data) { return (data && data.features) ? data.features.length : 0; }
+
+function encenderCapasIniciales() {
+  LAYERS.forEach(cfg => { if (leafletLayers[cfg.file]) toggleLayer(cfg.file, true); });
+  // Si algún departamento se había ocultado desde su lista, se vuelve a mostrar
+  (featureLayerIndex['Santa_Cruz_Dptos'] || []).forEach(entry => {
+    if (!entry.visible) {
+      entry.visible = true;
+      leafletLayers['Santa_Cruz_Dptos']?.addLayer(entry.layer);
+    }
+  });
+  document.querySelectorAll('#sublayers-Santa_Cruz_Dptos input[type=checkbox]').forEach(c => c.checked = true);
+  ordenarCapas();
+}
+
+/* Los polígonos van siempre al fondo: así no tapan trampas ni productores */
+function ordenarCapas() {
+  LAYERS.forEach(cfg => {
+    const lyr = leafletLayers[cfg.file];
+    if (cfg.type === 'polygons' && lyr && activeSet.has(cfg.file) && lyr.bringToBack) lyr.bringToBack();
+  });
+}
+
+/* Ícono de un grupo de trampas: círculo con la cantidad de trampas, del color
+   de la trampa en peor situación del grupo (rojo si alguna supera el umbral). */
+function iconoGrupoTrampas(cluster) {
+  const hijos = cluster.getAllChildMarkers();
+  const orden = NIVELES_SEMANA.map(n => n.color);
+  let peor = -1, color = COLOR_SIN_DATO;
+  hijos.forEach(m => {
+    const c = m.options.fillColor;
+    const i = orden.indexOf(c);
+    if (i > peor) { peor = i; color = c; }
+  });
+  const n = hijos.length;
+  const d = n < 5 ? 34 : (n < 10 ? 40 : 46);
+  return L.divIcon({
+    html: `<div style="background:${color};opacity:${Math.max(currentOpacity, 0.35)}">${n}</div>`,
+    className: 'grupo-trampas',
+    iconSize: [d, d]
+  });
+}
 
 /* ══════════════════════════════════════════════════════════════════
    CONTROL DE SEMANA
@@ -1470,6 +1566,8 @@ function refrescarVista() {
     const grande = vistaModo === 'semana' && v !== null && v > UMBRAL_ACCION;
     m.setRadius(grande ? 10 : 7);
   });
+  // Los grupos toman el color de su peor trampa: se recalculan con cada cambio
+  if (grupoTrampas) grupoTrampas.refreshClusters();
 
   // 2. Etiqueta de semana
   if (semanas.length) {
@@ -1691,7 +1789,7 @@ function buildSubLayerToggles(cfg) {
       const parentLyr = leafletLayers[cfg.file];
       if (!parentLyr) return;
       entry.visible = checkbox.checked;
-      if (checkbox.checked) parentLyr.addLayer(entry.layer);
+      if (checkbox.checked) { parentLyr.addLayer(entry.layer); ordenarCapas(); }
       else parentLyr.removeLayer(entry.layer);
     });
     row.addEventListener('click', (e) => {
@@ -1721,6 +1819,7 @@ function toggleLayer(file, forceOn) {
   const shouldAdd = forceOn !== undefined ? forceOn : !activeSet.has(file);
   if (shouldAdd) { activeSet.add(file); lyr.addTo(map); item.classList.add('active'); }
   else           { activeSet.delete(file); map.removeLayer(lyr); item.classList.remove('active'); }
+  ordenarCapas();
 }
 
 document.getElementById('retry-btn').addEventListener('click', loadLayers);
@@ -1948,7 +2047,7 @@ slider.addEventListener('input', () => {
   LAYERS.forEach(cfg => {
     const lyr = leafletLayers[cfg.file];
     if (!lyr || cfg.type === 'trampas') return;
-    lyr.setStyle({ opacity: currentOpacity, fillOpacity: currentOpacity * 0.35 });
+    lyr.setStyle({ opacity: currentOpacity, fillOpacity: currentOpacity * (cfg.fillFactor ?? 0.35) });
   });
   refrescarVista();
 });
@@ -2156,6 +2255,11 @@ document.addEventListener('fullscreenchange', () => {
 document.getElementById('tool-reset').addEventListener('click', () => {
   if (initialBounds) map.fitBounds(initialBounds, { padding: [20, 20] });
   clearMeasure();
+  // Capas y búsqueda como al abrir el visor
+  encenderCapasIniciales();
+  searchInput.value = '';
+  searchResults.style.display = 'none';
+  searchResults.innerHTML = '';
 });
 
 /* ── BOOT ── */
