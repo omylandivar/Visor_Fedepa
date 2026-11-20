@@ -2274,8 +2274,12 @@ document.addEventListener('fullscreenchange', () => {
 document.getElementById('tool-reset').addEventListener('click', () => {
   if (initialBounds) map.fitBounds(initialBounds, { padding: [20, 20] });
   clearMeasure();
-  // Capas y búsqueda como al abrir el visor
+  // Capas, opacidad y búsqueda como al abrir el visor
   encenderCapasIniciales();
+  if (slider.value !== '85') {
+    slider.value = 85;
+    slider.dispatchEvent(new Event('input'));
+  }
   searchInput.value = '';
   searchResults.style.display = 'none';
   searchResults.innerHTML = '';
