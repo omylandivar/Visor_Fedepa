@@ -365,6 +365,7 @@
       padding: 2px 0;
     }
     .sublayer-row:hover { color: var(--text); }
+    .dpto-punto { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; border: 1px solid rgba(255,255,255,.35); }
     .sublayer-row input[type=checkbox] { accent-color: var(--accent); cursor: pointer; }
     .sublayer-tools { display: flex; gap: 6px; margin: 2px 0 4px 6px; }
     .sublayer-tools button {
@@ -866,6 +867,40 @@ const NIVELES_ACUM = [
 ];
 const COLOR_SIN_DATO = '#5a6b80';
 
+/* ── COLORES DE LOS DEPARTAMENTOS ── */
+const COLORES_DPTO = {
+  'La Paz':     '#e76f51',
+  'Oruro':      '#e9c46a',
+  'Potosi':     '#b5838d',
+  'Cochabamba': '#8ecae6',
+  'Chuquisaca': '#ffb4a2',
+  'Tarija':     '#c77dff',
+  'Santa Cruz': '#4895ef',
+  'Beni':       '#90be6d',
+  'Pando':      '#f72585'
+};
+function claveDpto(n) {
+  return String(n || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
+}
+function colorDepartamento(nombre) {
+  return COLORES_DPTO[claveDpto(nombre)] || '#ff9f43';
+}
+/* Relleno de los departamentos según el zoom: con el mapa alejado se
+   distinguen bien los colores; de cerca queda un velo muy suave. */
+function rellenoDptos() {
+  const z = (typeof map !== 'undefined' && map.getZoom) ? map.getZoom() : 9;
+  if (z <= 8)  return 0.40;
+  if (z <= 10) return 0.25;
+  if (z <= 12) return 0.12;
+  return 0.06;
+}
+function factorRelleno(cfg) { return cfg.colorPorRasgo ? rellenoDptos() : 0.35; }
+/* Cuadrito del panel de capas: los nueve colores en una rueda */
+function muestraDptos() {
+  const c = Object.values(COLORES_DPTO), paso = 360 / c.length;
+  return 'conic-gradient(' + c.map((col, i) => `${col} ${i * paso}deg ${(i + 1) * paso}deg`).join(', ') + ')';
+}
+
 const LAYERS = [
   { file: 'trampas', label: 'Trampas de picudo', color: '#e84393', fillColor: '#e84393', type: 'trampas',
     titleField: 'cod_trampa',
@@ -881,8 +916,11 @@ const LAYERS = [
     tableLabels: { id: 'ID', nom: 'Nombre', munic: 'Municipio', uvicac: 'Zona', has: 'Hectáreas', lot_no: 'Lote' } },
   { file: 'Santa_Cruz_Dptos', label: 'Bolivia Departamentos', color: '#ff9f43', fillColor: '#ff9f43', type: 'polygons',
     perFeatureToggle: true, nameField: 'nom_dep', titleField: 'nom_dep',
-    /* Relleno tenue: la capa arranca encendida y el lote tiene que verse debajo */
-    fillFactor: 0.08, weight: 2,
+    /* Un color por departamento. El relleno depende del zoom (ver
+       rellenoDptos): fuerte con el mapa alejado, tenue de cerca, para que el
+       lote se vea debajo de las trampas. */
+    colorPorRasgo: f => colorDepartamento(f.properties && f.properties.nom_dep),
+    weight: 2,
     searchFields: ['nom_dep'],
     tableFields: ['nom_dep', 'i_eco_e', 'i_edu_e', 'i_s_e'],
     tableLabels: { nom_dep: 'Departamento', i_eco_e: 'Nivel económico', i_edu_e: 'Nivel educativo', i_s_e: 'Nivel salud' } },
@@ -1364,11 +1402,14 @@ async function loadLayers() {
          lienzo por capa, el de arriba tapaba los clics del de abajo: con los
          departamentos encendidos no se podían tocar las trampas. */
       const lyr = L.geoJSON(data, {
-        style: () => ({
-          color: cfg.color, fillColor: cfg.fillColor,
-          weight: cfg.weight || 1.5, opacity: currentOpacity,
-          fillOpacity: currentOpacity * (cfg.fillFactor ?? 0.35)
-        }),
+        style: (f) => {
+          const col = cfg.colorPorRasgo ? cfg.colorPorRasgo(f) : null;
+          return {
+            color: col || cfg.color, fillColor: col || cfg.fillColor,
+            weight: cfg.weight || 1.5, opacity: currentOpacity,
+            fillOpacity: currentOpacity * factorRelleno(cfg)
+          };
+        },
         pointToLayer: (feature, latlng) => {
           const p = feature.properties || {};
 
@@ -1513,6 +1554,15 @@ function encenderCapasIniciales() {
   document.querySelectorAll('#sublayers-Santa_Cruz_Dptos input[type=checkbox]').forEach(c => c.checked = true);
   ordenarCapas();
 }
+
+/* Relleno de los departamentos al cambiar el zoom (y al volver a mostrar uno) */
+function ajustarRellenoDptos() {
+  LAYERS.forEach(cfg => {
+    const lyr = leafletLayers[cfg.file];
+    if (cfg.colorPorRasgo && lyr) lyr.setStyle({ fillOpacity: currentOpacity * rellenoDptos() });
+  });
+}
+map.on('zoomend', ajustarRellenoDptos);
 
 /* Los polígonos van siempre al fondo: así no tapan trampas ni productores */
 function ordenarCapas() {
@@ -1748,7 +1798,7 @@ function buildLayerItem(cfg, count) {
   item.dataset.file = cfg.file;
   item.innerHTML = `
     <div class="layer-check"></div>
-    <div class="layer-swatch" style="background:${cfg.color}"></div>
+    <div class="layer-swatch" style="background:${cfg.colorPorRasgo ? muestraDptos() : cfg.color}"></div>
     <div class="layer-name">${cfg.label}<div class="layer-count">${count} elemento${count !== 1 ? 's' : ''}</div></div>
     ${cfg.perFeatureToggle ? '<button class="layer-expand-btn" title="Elegir qué mostrar">▾</button>' : ''}
     <button class="layer-table-btn" title="Ver tabla" data-tablefile="${cfg.file}">▤</button>
@@ -1806,13 +1856,15 @@ function buildSubLayerToggles(cfg) {
   entries.forEach(entry => {
     const row = document.createElement('label');
     row.className = 'sublayer-row';
-    row.innerHTML = `<input type="checkbox" checked/><span>${entry.name}</span>`;
+    const punto = cfg.colorPorRasgo
+      ? `<span class="dpto-punto" style="background:${colorDepartamento(entry.name)}"></span>` : '';
+    row.innerHTML = `<input type="checkbox" checked/>${punto}<span>${entry.name}</span>`;
     const checkbox = row.querySelector('input');
     checkbox.addEventListener('change', () => {
       const parentLyr = leafletLayers[cfg.file];
       if (!parentLyr) return;
       entry.visible = checkbox.checked;
-      if (checkbox.checked) { parentLyr.addLayer(entry.layer); ordenarCapas(); }
+      if (checkbox.checked) { parentLyr.addLayer(entry.layer); ajustarRellenoDptos(); ordenarCapas(); }
       else parentLyr.removeLayer(entry.layer);
     });
     row.addEventListener('click', (e) => {
@@ -2070,7 +2122,7 @@ slider.addEventListener('input', () => {
   LAYERS.forEach(cfg => {
     const lyr = leafletLayers[cfg.file];
     if (!lyr || cfg.type === 'trampas') return;
-    lyr.setStyle({ opacity: currentOpacity, fillOpacity: currentOpacity * (cfg.fillFactor ?? 0.35) });
+    lyr.setStyle({ opacity: currentOpacity, fillOpacity: currentOpacity * factorRelleno(cfg) });
   });
   refrescarVista();
 });
