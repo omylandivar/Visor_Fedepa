@@ -1418,6 +1418,10 @@ async function loadLayers() {
             });
             if (cfg.type === 'polygons' && p.nom_dep) {
               layer.bindTooltip(p.nom_dep, { className: 'dpto-tooltip', sticky: true });
+              // El nombre del departamento sigue al cursor solo con el mapa
+              // alejado; de cerca, todo el lote queda dentro de Santa Cruz y
+              // la etiqueta molestaría sobre las trampas.
+              layer.on('mouseover mousemove', () => { if (map.getZoom() > 9) layer.closeTooltip(); });
             }
           }
           if (cfg.perFeatureToggle && cfg.nameField) {
